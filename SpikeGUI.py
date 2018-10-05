@@ -6,23 +6,34 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+from PyQt5 import *
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QLabel, QGraphicsScene
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import pyqtSlot
+import shutil
+import os
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QWidget):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(990, 692)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../Downloads/spike.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./Images/spike.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        
+        
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 201, 571))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
+        
+        #Crop Button
         self.CropButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -31,6 +42,8 @@ class Ui_MainWindow(object):
         self.CropButton.setSizePolicy(sizePolicy)
         self.CropButton.setObjectName("CropButton")
         self.verticalLayout.addWidget(self.CropButton)
+        
+        #Invert Button
         self.InvertButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -39,6 +52,8 @@ class Ui_MainWindow(object):
         self.InvertButton.setSizePolicy(sizePolicy)
         self.InvertButton.setObjectName("InvertButton")
         self.verticalLayout.addWidget(self.InvertButton)
+        
+        #Grayscale Button
         self.GrayscaleButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -47,6 +62,8 @@ class Ui_MainWindow(object):
         self.GrayscaleButton.setSizePolicy(sizePolicy)
         self.GrayscaleButton.setObjectName("GrayscaleButton")
         self.verticalLayout.addWidget(self.GrayscaleButton)
+        
+        #Tint Button
         self.TintingButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -55,6 +72,8 @@ class Ui_MainWindow(object):
         self.TintingButton.setSizePolicy(sizePolicy)
         self.TintingButton.setObjectName("TintingButton")
         self.verticalLayout.addWidget(self.TintingButton)
+        
+        #Contrast and Exposure Button
         self.ContrastExposureButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -63,6 +82,8 @@ class Ui_MainWindow(object):
         self.ContrastExposureButton.setSizePolicy(sizePolicy)
         self.ContrastExposureButton.setObjectName("ContrastExposureButton")
         self.verticalLayout.addWidget(self.ContrastExposureButton)
+        
+        #Feature Detection Button
         self.FeatureDetectionButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -71,6 +92,8 @@ class Ui_MainWindow(object):
         self.FeatureDetectionButton.setSizePolicy(sizePolicy)
         self.FeatureDetectionButton.setObjectName("FeatureDetectionButton")
         self.verticalLayout.addWidget(self.FeatureDetectionButton)
+        
+        #Steganographic Functions Button
         self.StegFuncButtons = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -79,6 +102,8 @@ class Ui_MainWindow(object):
         self.StegFuncButtons.setSizePolicy(sizePolicy)
         self.StegFuncButtons.setObjectName("StegFuncButtons")
         self.verticalLayout.addWidget(self.StegFuncButtons)
+        
+        
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(209, -1, 771, 571))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
@@ -94,12 +119,19 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
+        
+        #Save Button
         self.SaveButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.SaveButton.setObjectName("SaveButton")
         self.horizontalLayout.addWidget(self.SaveButton)
+        
+        #Load Button
         self.LoadButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.LoadButton.setObjectName("LoadButton")
         self.horizontalLayout.addWidget(self.LoadButton)
+        self.LoadButton.clicked.connect(self.load_image)
+  
+        
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 990, 31))
@@ -111,6 +143,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -124,3 +157,38 @@ class Ui_MainWindow(object):
         self.StegFuncButtons.setText(_translate("MainWindow", "Steganography Functions"))
         self.SaveButton.setText(_translate("MainWindow", "Save"))
         self.LoadButton.setText(_translate("MainWindow", "Load Image"))
+        
+        
+    def select_file(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Image files (*.jpg *.gif)")
+        return fname
+
+    def load_image(self):
+        filename = str(self.select_file())
+        
+        #Splits filename to give us the absolute path to the image
+        array = filename.split("\'")
+        filename = array[1]
+        
+        #Copies image to the same directory as the script
+        dst_dir = sys.path[0]
+        shutil.copy(filename, dst_dir)
+        
+        #Splits the absolute path to give us the name of the image file
+        array = filename.split("/")
+        filename = array[-1]
+        
+        #Creating a scene and displaying it on the graphicsView
+        self.scene = QGraphicsScene()
+        self.scene.addPixmap(QPixmap(filename))
+        self.graphicsView.setScene(self.scene)
+        
+        
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
