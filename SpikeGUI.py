@@ -1,22 +1,26 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'SpikeGUI.ui'
-#
-# Created by: PyQt5 UI code generator 5.6
-#
-# WARNING! All changes made in this file will be lost!
 
-from PyQt5 import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QLabel, QGraphicsScene
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot
 import shutil
 import os
+from PIL import Image
+import numpy
+
 
 class Ui_MainWindow(QWidget):
+    absFilename = ''
+    copyLocation = ''
+    filename = ''
 
     def setupUi(self, MainWindow):
+        
+
+
+        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(990, 692)
         icon = QtGui.QIcon()
@@ -42,6 +46,29 @@ class Ui_MainWindow(QWidget):
         self.CropButton.setSizePolicy(sizePolicy)
         self.CropButton.setObjectName("CropButton")
         self.verticalLayout.addWidget(self.CropButton)
+        
+        #Flip Button
+        self.FlipButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.CropButton.sizePolicy().hasHeightForWidth())
+        self.FlipButton.setSizePolicy(sizePolicy)
+        self.FlipButton.setObjectName("FlipButton")
+        self.verticalLayout.addWidget(self.FlipButton)
+        self.FlipButton.clicked.connect(self.flip_image)
+        
+        #Rotate Button
+        self.RotateButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.CropButton.sizePolicy().hasHeightForWidth())
+        self.RotateButton.setSizePolicy(sizePolicy)
+        self.RotateButton.setObjectName("RotateButton")
+        self.verticalLayout.addWidget(self.RotateButton)
+        self.RotateButton.clicked.connect(self.rotate_image)
+
         
         #Invert Button
         self.InvertButton = QtWidgets.QPushButton(self.verticalLayoutWidget)
@@ -124,13 +151,13 @@ class Ui_MainWindow(QWidget):
         self.SaveButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.SaveButton.setObjectName("SaveButton")
         self.horizontalLayout.addWidget(self.SaveButton)
+        self.SaveButton.clicked.connect(self.save_image)
         
         #Load Button
         self.LoadButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.LoadButton.setObjectName("LoadButton")
         self.horizontalLayout.addWidget(self.LoadButton)
-        self.LoadButton.clicked.connect(self.load_image)
-  
+        self.LoadButton.clicked.connect(self.get_locations)
         
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -149,6 +176,8 @@ class Ui_MainWindow(QWidget):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Spike"))
         self.CropButton.setText(_translate("MainWindow", "Crop"))
+        self.FlipButton.setText(_translate("MainWindow", "Mirror Image"))
+        self.RotateButton.setText(_translate("MainWindow", "Rotate Image"))
         self.InvertButton.setText(_translate("MainWindow", "Invert Image"))
         self.GrayscaleButton.setText(_translate("MainWindow", "Grayscale"))
         self.TintingButton.setText(_translate("MainWindow", "Tinting"))
@@ -162,14 +191,20 @@ class Ui_MainWindow(QWidget):
     def select_file(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',"Image files (*.jpg *.gif)")
         return fname
-
-    def load_image(self):
+    
+    def get_locations(self):
+        
+        global filename
+        
+        #Brings up file system for user to select a file
         filename = str(self.select_file())
         
         #Splits filename to give us the absolute path to the image
         array = filename.split("\'")
         filename = array[1]
-        
+        global absFilename
+        absFilename = filename
+
         #Copies image to the same directory as the script
         dst_dir = sys.path[0]
         shutil.copy(filename, dst_dir)
@@ -177,12 +212,69 @@ class Ui_MainWindow(QWidget):
         #Splits the absolute path to give us the name of the image file
         array = filename.split("/")
         filename = array[-1]
+        global copyLocation
+        copyLocation = dst_dir + '\\' + filename
+        
+        self.display_image()
+    
+    def display_image(self):
+        """
+        Displays the image that is in the global variable copyLocation on the graphicsView
+        """
         
         #Creating a scene and displaying it on the graphicsView
         self.scene = QGraphicsScene()
         self.scene.addPixmap(QPixmap(filename))
         self.graphicsView.setScene(self.scene)
+        #TODO: set up a helper method that updates the graphicsView and call it here, that way when the file is edited the helper method can be called to display the chages
+
         
+    def save_image(self):
+        #file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        #file = file + '/' + filename
+        #print(file)
+        #image_obj = Image.open(copyLocation)
+        #image_obj.save(file)
+        #TODO: ask them if they want to overwrite the original, and if not then ask for new file name
+        
+    def flip_image(self):
+        """
+        Flip or mirror the image and calls display_image so that the edited version is displayed
+        """
+        image_obj = Image.open(copyLocation)
+        rotated_image = image_obj.transpose(Image.FLIP_LEFT_RIGHT)
+        rotated_image.save(copyLocation)
+        #self.display_image()
+    
+    def rotate_image(self):
+        """
+        Rotate the given photo 90 degrees and calls display_image
+        """
+        image_obj = Image.open(copyLocation)
+        #rotated_image = image_obj.rotate(90)
+        #image_obj.swapaxes(-2,-1)[...,::-1]
+        rotated_image.save(copyLocation)
+        self.display_image()
+        
+    
+    def mousePressEvent (self, eventQMouseEvent):
+        self.originQPoint = eventQMouseEvent.pos()
+        self.currentQRubberBand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, self)
+        self.currentQRubberBand.setGeometry(QtCore.QRect(self.originQPoint, QtCore.QSize()))
+        self.currentQRubberBand.show()
+
+    def mouseMoveEvent (self, eventQMouseEvent):
+        self.currentQRubberBand.setGeometry(QtCore.QRect(self.originQPoint, eventQMouseEvent.pos()).normalized())
+
+    def mouseReleaseEvent (self, eventQMouseEvent):
+        self.currentQRubberBand.hide()
+        currentQRect = self.currentQRubberBand.geometry()
+        self.currentQRubberBand.deleteLater()
+        cropQPixmap = self.pixmap().copy(currentQRect)
+        cropQPixmap.save('output.png')
+        
+        
+    
         
 if __name__ == "__main__":
     import sys
