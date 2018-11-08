@@ -1,5 +1,12 @@
 # Spike Image Processing
-#
+#  !!!
+ When you run this program, it will automatically update your pip command and install the following packages:
+   PIL
+   skikit-image
+   scipy
+   numpy
+   pyqt5
+#  !!!
 This program has only been tested on Windows machines uing Python 3.7.
 
  !!!
