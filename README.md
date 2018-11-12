@@ -2,7 +2,7 @@
 #  !!!
  When you run this program, it will automatically update your pip command and install the following packages:
    PIL,
-   skikit-image,
+   scikit-image,
    scipy,
    numpy,
    pyqt5,
