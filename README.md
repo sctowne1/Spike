@@ -6,19 +6,11 @@
    scipy
    numpy
    pyqt5
+   matplotlib
 #  !!!
 This program has only been tested on Windows machines uing Python 3.7.
 
- !!!
- When you run this program, it will automatically update your pip command and install the following packages:
-   PIL
-   skikit-image
-   scipy
-   numpy
-   pyqt5
- !!!
-
- This is an image editing program that implements image editing functions from the following packages:
+This is an image editing program that implements image editing functions from the following packages:
    PIL
    skikit-image
    scipy
