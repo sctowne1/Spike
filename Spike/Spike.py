@@ -8,6 +8,7 @@
 ##
 from SpikeImports import *
 import SpikeFunctions
+import FeatureExtraction
 
 
 
@@ -97,23 +98,23 @@ class Ui_MainWindow(QWidget):
         self.GrayscaleButton.clicked.connect(self.grayscale_image)
         
         #Tinting Button
-        self.TintingButton = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy.setHeightForWidth(self.TintingButton.sizePolicy().hasHeightForWidth())
-        self.TintingButton.setSizePolicy(sizePolicy)
-        self.TintingButton.setObjectName("TintingButton")
-        self.verticalButtonPanel.addWidget(self.TintingButton)
-        self.TintingButton.clicked.connect(self.tint_image)
+        #self.TintingButton = QtWidgets.QPushButton(self.centralwidget)
+        #sizePolicy.setHeightForWidth(self.TintingButton.sizePolicy().hasHeightForWidth())
+        #self.TintingButton.setSizePolicy(sizePolicy)
+        #self.TintingButton.setObjectName("TintingButton")
+        #self.verticalButtonPanel.addWidget(self.TintingButton)
+        #self.TintingButton.clicked.connect(self.tint_image)
 
         
         #Contrast and Exposure Button
-        self.ContrastExposureButton = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy.setHeightForWidth(self.ContrastExposureButton.sizePolicy().hasHeightForWidth())
-        self.ContrastExposureButton.setSizePolicy(sizePolicy)
-        self.ContrastExposureButton.setObjectName("ContrastExposureButton")
-        self.verticalButtonPanel.addWidget(self.ContrastExposureButton)
+        #self.ContrastExposureButton = QtWidgets.QPushButton(self.centralwidget)
+        #sizePolicy.setHeightForWidth(self.ContrastExposureButton.sizePolicy().hasHeightForWidth())
+        #self.ContrastExposureButton.setSizePolicy(sizePolicy)
+        #self.ContrastExposureButton.setObjectName("ContrastExposureButton")
+        #self.verticalButtonPanel.addWidget(self.ContrastExposureButton)
         #self.ContrastExposureButton.clicked.connect(self.contrast_image)
 
-        
+        #TODO for next sprint
         #Feature Detection Button
         self.FeatureDetectionButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy.setHeightForWidth(self.FeatureDetectionButton.sizePolicy().hasHeightForWidth())
@@ -121,6 +122,7 @@ class Ui_MainWindow(QWidget):
         self.FeatureDetectionButton.setObjectName("FeatureDetectionButton")
         self.verticalButtonPanel.addWidget(self.FeatureDetectionButton)
         
+        #TODO for next sprint: Research algorithms and setup. Encryption(watermarks), and message encryption
         #Steganographic Functions Button
         self.StegFuncButtons = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy.setHeightForWidth(self.StegFuncButtons.sizePolicy().hasHeightForWidth())
@@ -198,8 +200,8 @@ class Ui_MainWindow(QWidget):
         self.RotateButton.setText(_translate("MainWindow", "Rotate Image"))
         self.InvertButton.setText(_translate("MainWindow", "Invert Image"))
         self.GrayscaleButton.setText(_translate("MainWindow", "Grayscale"))
-        self.TintingButton.setText(_translate("MainWindow", "Tinting"))
-        self.ContrastExposureButton.setText(_translate("MainWindow", "Contrast and Exposure"))
+        #self.TintingButton.setText(_translate("MainWindow", "Tinting"))
+        #self.ContrastExposureButton.setText(_translate("MainWindow", "Contrast and Exposure"))
         self.FeatureDetectionButton.setText(_translate("MainWindow", "Feature Detection"))
         self.StegFuncButtons.setText(_translate("MainWindow", "Steganography Functions"))
         self.CompareButton.setText(_translate("MainWindow", "Compare"))
@@ -213,6 +215,9 @@ class Ui_MainWindow(QWidget):
 ## FUNCTIONS
     
     def select_file(self):
+        """
+        Brings up file system for user to select image to edit.
+        """
         
         #Can edit images that are .png, but the display quality in program is 
         #noticably worse, however when you open the edited image outside of 
@@ -222,10 +227,15 @@ class Ui_MainWindow(QWidget):
         return fname
     
     def get_locations(self):
+        """
+        Ater receiving the filename, parses the string to botain the absolute path,
+        copies the image to the local Spike directory, and populates global 
+        variables accordingly.
+        """
         
         global filename
         
-        #Brings up file system for user to select a file
+        #Calls select_file which returns the filename of the selected image
         filename = str(self.select_file())
         
         #Splits filename to give us the absolute path to the image
@@ -257,22 +267,30 @@ class Ui_MainWindow(QWidget):
                       '.\\image4.' + file_ext]
         global copy_count
         global undo_count
-        undo_count = -1
+        undo_count = -1 #repressents the number of times you can use the undo operation
         copy_count = 0
         self.display_image()
         
     def save_copy(self):
+        """
+        Saves the image into the correct position in the copy_array.
+        """
         global copy_count
         global undo_count
         global copy_array
-        if(undo_count < 4):
+        if(undo_count < 4): #the number in this statement should be one less than the length of copy_array
             undo_count = undo_count + 1
         image = Image.open(copyLocation)
-        undo_location = copy_array[copy_count % 5]
+        #undo_location is the location of the image in the copy_array that will be displayed when the undo function is called.
+        undo_location = copy_array[copy_count % 5] #change the number after the mod operator for more positions in copy_array. This number should match the length of the variable copy_array
         image.save(undo_location)
         copy_count = copy_count + 1
 
     def undo(self):
+        """
+        Implements functionality of the undo button by displaying the image from
+        the previous edit and saving it to the copyLocation.
+        """
         global copy_count
         global undo_count
         if(undo_count > 0 and copy_count >= 0):
@@ -305,6 +323,10 @@ class Ui_MainWindow(QWidget):
         self.graphicsView.setScene(self.scene)
 
     def save_image(self):
+        """
+        Saves the image to the selected location in the computer's file system.
+        """
+        #TODO: Allow user to change file name so as to not overwrite any other files
         file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
         file = file + '/' + filename
         print(file)
@@ -313,6 +335,7 @@ class Ui_MainWindow(QWidget):
         
 
 ## Editing Functions
+    
     def mirror_image(self):
         global copyLocation
         SpikeFunctions.mirror_image(self, copyLocation)
@@ -340,15 +363,16 @@ class Ui_MainWindow(QWidget):
         SpikeFunctions.compare_image(copyLocation, copy_array, copy_count)
 
 
-##Main Function
+## Main Function
 
 if __name__ == "__main__":
-    import sys
     
-    return_code = subprocess.call("setup.py", shell=True)
+    #return_code = subprocess.call("setup.py", shell=True)
     
-    #TODO: Check return code to ensure packages installed properly
-    print(return_code)
+    subprocess.call("setup.py", shell=True) #TODO: shell=True ccan be a security issue, possibly look into a way around it
+
+    #TODO: Check return code to ensure packages installed properly and pull up prompt if they do not
+    #print(return_code)
     
 
     app = QtWidgets.QApplication(sys.argv)

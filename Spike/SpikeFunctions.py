@@ -38,7 +38,10 @@ def grayscale_image(spike, copyLocation):
     spike.display_image()
 
 def tint_image(spike, copyLocation):
-    
+    """
+    Used to tint an image with the selected hue.
+    """
+    #TODO: This method does not work. May not be included in final product. Finishing it will be determined by the amount of time we have left after finishing the core functions of the program.
     
     img_obj = Image.open(copyLocation)
     img_array = np.asarray(img_obj)
@@ -70,6 +73,9 @@ def invert_image(spike, copyLocation):
     spike.display_image()
     
 def compare_image(copyLocation, copy_array, copy_count):
+    """
+    Creates a SecondaryWindow with the most recent and directly previous image using the SecondaryWindow.py file.
+    """
     if(copy_count > 1):
         #runs SecondaryWindow.py executable
         pid = subprocess.Popen([sys.executable, "SecondaryWindow.py", copy_array[copy_count%5-2], copyLocation])
