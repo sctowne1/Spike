@@ -1,6 +1,6 @@
 # Spike Image Processing
 
- **When you run this program, it will automatically update your pip command and install the following packages:**
+ **To you run this program, you will need to install the following packages:**
    - PIL,
    - scikit-image,
    - scipy,
