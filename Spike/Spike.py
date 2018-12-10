@@ -362,14 +362,13 @@ class Ui_MainWindow(QWidget):
         global copy_array
         SpikeFunctions.compare_image(copyLocation, copy_array, copy_count)
 
-
 ## Main Function
 
 if __name__ == "__main__":
     
     #return_code = subprocess.call("setup.py", shell=True)
-    
-    subprocess.call("setup.py", shell=True) #TODO: shell=True ccan be a security issue, possibly look into a way around it
+    #TODO: This is not ther right way to do this
+    #subprocess.call("setup.py", shell=True) 
 
     #TODO: Check return code to ensure packages installed properly and pull up prompt if they do not
     #print(return_code)

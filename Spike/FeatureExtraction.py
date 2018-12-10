@@ -145,4 +145,4 @@ def run():
         print(parseFilename(os.path.join(images_path, names[match_img])))
 
 # Uncomment to run file independently for testing
-run()
+#run()
