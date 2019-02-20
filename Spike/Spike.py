@@ -97,24 +97,7 @@ class Ui_MainWindow(QWidget):
         self.verticalButtonPanel.addWidget(self.GrayscaleButton)
         self.GrayscaleButton.clicked.connect(self.grayscale_image)
         
-        #Tinting Button
-        #self.TintingButton = QtWidgets.QPushButton(self.centralwidget)
-        #sizePolicy.setHeightForWidth(self.TintingButton.sizePolicy().hasHeightForWidth())
-        #self.TintingButton.setSizePolicy(sizePolicy)
-        #self.TintingButton.setObjectName("TintingButton")
-        #self.verticalButtonPanel.addWidget(self.TintingButton)
-        #self.TintingButton.clicked.connect(self.tint_image)
 
-        
-        #Contrast and Exposure Button
-        #self.ContrastExposureButton = QtWidgets.QPushButton(self.centralwidget)
-        #sizePolicy.setHeightForWidth(self.ContrastExposureButton.sizePolicy().hasHeightForWidth())
-        #self.ContrastExposureButton.setSizePolicy(sizePolicy)
-        #self.ContrastExposureButton.setObjectName("ContrastExposureButton")
-        #self.verticalButtonPanel.addWidget(self.ContrastExposureButton)
-        #self.ContrastExposureButton.clicked.connect(self.contrast_image)
-
-        #TODO for next sprint
         #Feature Detection Button
         self.FeatureDetectionButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy.setHeightForWidth(self.FeatureDetectionButton.sizePolicy().hasHeightForWidth())
@@ -122,13 +105,14 @@ class Ui_MainWindow(QWidget):
         self.FeatureDetectionButton.setObjectName("FeatureDetectionButton")
         self.verticalButtonPanel.addWidget(self.FeatureDetectionButton)
         
-        #TODO for next sprint: Research algorithms and setup. Encryption(watermarks), and message encryption
         #Steganographic Functions Button
         self.StegFuncButtons = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy.setHeightForWidth(self.StegFuncButtons.sizePolicy().hasHeightForWidth())
         self.StegFuncButtons.setSizePolicy(sizePolicy)
         self.StegFuncButtons.setObjectName("StegFuncButtons")
         self.verticalButtonPanel.addWidget(self.StegFuncButtons)
+        self.StegFuncButtons.clicked.connect(self.steg_options)
+
         
         #Compare Button
         self.CompareButton = QtWidgets.QPushButton(self.centralwidget)
@@ -228,7 +212,7 @@ class Ui_MainWindow(QWidget):
     
     def get_locations(self):
         """
-        Ater receiving the filename, parses the string to botain the absolute path,
+        Ater receiving the filename, parses the string to obtain the absolute path,
         copies the image to the local Spike directory, and populates global 
         variables accordingly.
         """
@@ -361,8 +345,139 @@ class Ui_MainWindow(QWidget):
         global copy_count
         global copy_array
         SpikeFunctions.compare_image(copyLocation, copy_array, copy_count)
+    
+    def steg_options(self):
+        global copyLocation
+        #print(copyLocation)
+        
+        #Parse cover location
+        cover = str(self.select_file())
+        array = cover.split("\'")
+        file = array[1]
+        cover
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         = file
+        
+        pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation, cover])
+        pid.wait()
+        
+        self.display_image()
+        
+        
+    
 
 ## Main Function
+
 
 if __name__ == "__main__":
     
@@ -387,4 +502,5 @@ if __name__ == "__main__":
     MainWindow.show() 
     
     sys.exit(app.exec_())
+
 
