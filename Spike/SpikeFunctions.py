@@ -270,13 +270,14 @@ def decode_lsb_text(encoded_image, last_j, last_i, spike, copyLocation, max_lsb_
 
 
 
+    
+    
 # IMAGE LSB
-def lsb_alg_img(spike, copyLocation):
+def lsb_alg_img(copyLocation, cover):
     #TODO: for getting our cover image to test stuffs for now. do what you want
-    dst_dir = sys.path[0]
-    cover = dst_dir + '\\' + 'cover.jpg'
-    
-    
+    #dst_dir = sys.path[0]
+    #cover = dst_dir + '\\' + 'cover.jpg'
+
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
     cover_image = Image.open(cover)
@@ -364,21 +365,31 @@ def lsb_alg_img(spike, copyLocation):
         j = 0
         i  += 1
         
-    #cover_image.save(copyLocation)
+    cover_image.save(copyLocation)
     
     #spike.display_image()
-    
+    print(cover_j)
+    print(cover_i)
+    print(secret_width)
+    print(max_lsb_used)
     
     #TODO: THE FOLLOWING information is NEEDED to decode:
     #cover_image, cover_j, cover_i, secret_width, and max_lsb_used
     #TODO: How do we handle the user decoding it since we need this information
     # maybe we give them a pw key that is comma seperated that corresponds to these
     # parameters?
-    decode_lsb_img(cover_image, cover_j, cover_i, secret_width, spike, copyLocation, max_lsb_used)
+    #decode_lsb_img(cover_image, cover_j, cover_i, secret_width, copyLocation, max_lsb_used)
+    
 
 
 
-def decode_lsb_img(encoded_image, last_j, last_i, secret_width, spike, copyLocation, max_lsb_used):
+def decode_lsb_img(encoded_image, last_j, last_i, secret_width, copyLocation, max_lsb_used):
+#def decode_lsb_img(copyLocation, encoded_image):
+    #last_j = 4500
+    #last_i = 1142
+    #secret_width = 500
+    #max_lsb_used = 0
+    #encoded_image = Image.open(encoded_image)
     #gets all the pixels from the encoded image
     cover_width, cover_height = encoded_image.size
     encoded_px = encoded_image.load()
@@ -486,7 +497,8 @@ def decode_lsb_img(encoded_image, last_j, last_i, secret_width, spike, copyLocat
     array = np.array(complete_image, dtype = np.uint8)
     decoded_image = Image.fromarray(array)
     decoded_image.save(copyLocation)
-    spike.display_image()
+    
+    #spike.display_image()
 
 
 
@@ -502,431 +514,11 @@ def binary_to_string(binary_list):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def lsb_alg1(spike, copyLocation):
-    
-    # for getting our cover image to test stuffs for now... we will fix later
-    dst_dir = sys.path[0]
-    cover = dst_dir + '\\' + 'cover.jpg'
-    
-    
-    # we open our cover image
-    # and get the dimensions of the cover image for use in determining how many
-    cover_image = Image.open(cover)
-    # pixels there are
-    cover_width, cover_height = cover_image.size
-    
-    #cover_size = cover_width * cover_height
-    
-    #our image we want to hide
-    secret = copyLocation
-    
-    # we open our secret image
-    secret_image = Image.open(secret)
-    # we get the dimensions of the secret image for use in determining how many
-    # pixels there are
-    secret_width, secret_height = secret_image.size
-    
-    #secret_size = secret_width * secret_height
-    
-    #print("secret size: " + str(secret_size))
-    #print('cover size: ' + str(cover_size))
-    
-    # loads our pixels from our cover image
-    cover_pixs = cover_image.load()
-    
-    
-    #loads our pixels from our secret image
-    secret_pixs = secret_image.load()
-    ##
-    print(secret_pixs[0,46])
-    print(secret_pixs[0,47])
-    print(secret_pixs[0,75])
-    print(secret_pixs[0,76])
-    print(secret_pixs[0,77])
-    print(secret_pixs[0,78])
-    print(secret_pixs[0,79])
-   # for t in range(225):
-    #    specific = secret_pixs[0,t]
-     #   print(str(specific[-1]) + ", ")
-    ##
-    
-    
-    extract_lsb_from_cover = 1
-    
-    # width index for the secret image pixel that we are currently on 
-    secret_windex = 0
-    #height index for the secret image pixel that we are currently on
-    secret_hindex = 0
-    
-    # extracts the pixel at the beginning index and transforms it into a binary
-    # list that represents the pixel
-    binary_list = []
-    count_bits = 24
-    
-    encode_a_0 = 254
-    encode_a_1 = 1
-    
-    
-    ##OPTIONAL FOR TESTING PURPOSES
-    counter= 0
-    save_j = 0
-    max_lsb_used = 0
-    secret_bits_counter = 0
-    ##
-
-
-    i = 0
-    j = 0
-    go = True    
-    # iterates through our cover image boolean go tells us when we have reached
-    # our last pixel.. len(binary_list) tells us that we still have bits to encode
-    while(go or len(binary_list) != 0):
-        while(j < cover_height and (go or len(binary_list) != 0)):
-            # if we have successfully encoded the entire pixel into the lsb,
-            # then we move on to the next pixel
-            if (count_bits == 24 and len(binary_list) == 0):
-                secret_windex, secret_hindex, go = find_coordinates(secret_hindex, secret_windex, secret_height, secret_width)
-                if secret_bits_counter <= 79:
-                    print(str(secret_bits_counter) + ": width: " +str(secret_windex) + " height: " + str(secret_hindex))
-                binary_list = pixel_to_binary_list(secret_pixs[secret_windex, secret_hindex])
-                pixel_to_binary_list_check(secret_pixs[secret_windex, secret_hindex], i, j)
-                secret_bits_counter += 1
-                
-                ## OPTIONAL FOR TESTING PURPOSES
-                global total_secret_pixs
-                total_secret_pixs += 1
-                ##
-                
-                count_bits = 0
-            
-            #extract our cover pixel
-            extract_pix = cover_pixs[i, j]
-            extract_pix_value = extract_pix[-1]
-            #NOTE: we encode the bits starting from the LSB!
-            bit_to_encode = int(binary_list.pop(0))      
-            if i <= 1 and j <= 791 and bit_to_encode == 0:
-                print("Ok.... it should be a 1.... i: " + str(i) + " j: " +str(j) )
-                print(cover_width)
-                print(cover_height)
-            if bit_to_encode == 0:
-                # this bit wise ands the value with '11111110' so we are
-                # able to insert a 0 in the LSB
-                extract_pix_value = extract_pix_value & encode_a_0
-                
-                ##OPTIONAL FOR TESTING PURPOSES
-                counter += 1
-                ##
-                
-                # we put our new found value back into the pixel tuple
-                encoded_pix = (extract_pix[0], extract_pix[1], extract_pix_value)
-                ##
-                if i <= 1 and j <= 792:
-                    print("Old cover pixel is: " + str(extract_pix) +"    New cover pixel is: " + str(encoded_pix))
-                
-                ##
-                # and put that new encoded pixel into the cover image
-                cover_pixs[i,j] = encoded_pix
-                count_bits += 1
-            # if we are trying to encode a '1' into the LSB    
-
-            elif bit_to_encode == 1:
-                #print("encoding 1")
-                # this bit wise ors the value with '00000001' so we are able to
-                # insert a 1 in the LSB
-                extract_pix_value = extract_pix_value | encode_a_1
-                
-                
-                ##OPTIONAL FOR TESTING PURPOSES
-                counter += 1
-                ##
-                
-                
-                # we put our new found value back into the pixel tuple
-                encoded_pix = (extract_pix[0], extract_pix[1], extract_pix_value)
-                
-                ##
-                #if i == 0 and j > 120 and j < 130 :
-                #    print("Old cover pixel is: " + str(extract_pix) +"    New cover pixel is: " + str(encoded_pix))
-                
-                ##
-                
-                # and put that new encoded pixel into the cover image
-                cover_pixs[i,j] = encoded_pix
-                
-                count_bits += 1
-            j += 1
-            ##TESTING PURPOSES
-        save_j = j
-        ##
-        j = 0
-        i += 1
-        # if we finished iterating through our cover image
-        if i == cover_width:
-            # we have to & with 127 to clear out the greatest 1 bit so when we 
-            # left shift, it does not mess us up
-            encode_a_0 = encode_a_0 & 127 # from 11111110 becomes 011111110
-            encode_a_0 = encode_a_0 << 1 # then 11111100
-            encode_a_0 = encode_a_0 | encode_a_1 # finally 11111101
-            
-            # for encoding a 1, it is quite simple: 00000001 becomes 00000010
-            encode_a_1 = encode_a_1 << 1
-            #reset back at beginning because we have to do second LSB and so on
-            # until we get to the 8th LSB
-            i = 0
-            max_lsb_used += 1
-            
-            ##OPTIONAL FOR TESTING PURPOSES
-            print("encoding 0 is now: " + str(encode_a_0) + "\nencoding 1 is now: " + str(encode_a_1)   )
-            ##
-   
-    
-    ##OPTIONAL FOR TESTING PURPOSES
-    print("pixels touched: "+str(counter))
-    print("pixels touched in secret image: " + str(total_secret_pixs ))
-    print("final i is: " + str(i) +"\nfinal j is: " + str(save_j))
-    test_if_different(cover_pixs, cover_width, cover_height)
-    ##
-    
-    
-    #displays the cover image with the encoded image inside it
-    cover_image.save(copyLocation)
-    
-    spike.display_image()
-    
-    decode(cover_image, i, save_j, max_lsb_used, secret_height, copyLocation, spike, secret_pixs)
-    
-
-
-    
-
-    
-
-
-    
-# NOTE: for max_lsb_used, if it is a 1 it means the 1st LSB and part of 2nd LSB was used
-def decode1(encoded_image, last_i, last_j, max_lsb_used, secret_height, copyLocation, spike, orig_secret_image):
-    #TODO finish and test this decode function 3) implement a text message lsb algorithm
-    secret_px_image = []
-    secret_px_array = []
-    secret_px_list = []
-    encoded_width, encoded_height = encoded_image.size
-    encoded_pixs = encoded_image.load()
-    
-    
-    ##
-    for stuff in range(120, 131):
-        print("Encoded pixs: " + str(encoded_pixs[0,stuff]))
-    
-    ##
-    
-    
-    
-    extract_a_bit = 1
-    total_times_through = 0
-    go = True
-    i = 0
-    j = 0
-    counter = 0
-    #does all the iterations of the whole picture
-    
-    while max_lsb_used > 0:
-        while i < encoded_width:
-            while j < encoded_height:
-                bits = encoded_pixs[i,j]
-                specific_bits = bits[-1]
-                bit_we_want = specific_bits & extract_a_bit
-                # if we have a full pixel that is ready
-                if len(secret_px_list) == 24:
-                    # we extract the different bits that correspond to RGB
-                    ##
-                    if i == 0 and j > 120 and j < 131:
-                        print("Pixel list is : " +str(secret_px_list))
-                        ##
-                    red_bits = sum(secret_px_list[0:8])
-                    green_bits = sum(secret_px_list[8:16])
-                    blue_bits = sum(secret_px_list[16:])
-                    # we make a tuple that is ready to be added to the px_array
-                    pixel_tuple = (red_bits, green_bits, blue_bits)
-                    ##
-                    if i == 0 and j > 120 and j < 131:
-                        print("Pixel tuple is : " +str(pixel_tuple))
-                        ##
-                    secret_px_list = []
-                    # if we have enough tuple pixels to make a line in the image
-                    if len(secret_px_array) == secret_height:
-                        # we add it to the image
-                        secret_px_image.append(secret_px_array)
-                        secret_px_array = []
-                    # else we add the tuple to the line array until we have enough    
-                    else:
-                        secret_px_array.append(pixel_tuple)
-                # if we do not have enough bits to make a pixel.. keep adding the bits    
-                else:    
-                    secret_px_list.insert(0, bit_we_want)
-                    
-                j += 1
-            j = 0
-            i += 1
-        max_lsb_used = max_lsb_used - 1
-        # we want the next LSB in the next iteration
-        extract_a_bit = extract_a_bit << 1
-        
-        
-    ##
-    stop = True
-    which_pix = 0
-    dst_dir = sys.path[0]
-    cover = dst_dir + '\\' + 'cover.jpg'
-    
-    
-    # we open our cover image
-    # and get the dimensions of the cover image for use in determining how many
-    cover_image = Image.open(cover)
-    # pixels there are
-    cover_image_px = cover_image.load()
-    ##
-    i = 0
-    j = 0
-    count = 0
-    extract_a_bit = 1
-    # does the "rest" of the iterations
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    while i < last_i:
-        while j < last_j:
-            bits = encoded_pixs[i,j]
-            specific_bits = bits[-1]
-            bit_we_want = specific_bits & extract_a_bit
-            
-            ##
-            #if i == 0:
-                #print(str(specific_bits))
-                ##
-                
-            # if we have a full pixel that is ready
-            if len(secret_px_list) == 24:
-                secret_px_list.reverse()
-                print("****************"+ str(which_pix) +"*************************")
-                print("EXTRACTED DATA: \n"+ str(secret_px_list))
-                print("ORIGINAL SECRET IMAGE:")
-                pixel_to_binary_list_print(orig_secret_image[0, which_pix])
-                print("\nORIGINAL COVER IMAGE:")
-                pixel_to_binary_list_print(cover_image_px[0,which_pix])
-                print("COVER IMAGE WITH SECRET DATA:")
-                pixel_to_binary_list_print(encoded_pixs[0,which_pix])
-                
-                print("************************************\n\n")
-                
-                which_pix += 1
-                
-                ##
-                #if i == 0 and j > 120 and j < 131:
-                    #print("Pixel list is : " +str(secret_px_list))
-                    ##
-                # we extract the different bits that correspond to RGB
-                red_bits = getActualNum(secret_px_list[0:8])
-                ##
-                #if i == 0 and j > 120 and j < 131:
-                    #print("red bits : " +str(red_bits))
-                    ##
-                green_bits = getActualNum(secret_px_list[8:16])
-                ##
-                #if i == 0 and j > 120 and j < 131:
-                    #print("green bits : " +str(green_bits))
-                    ##
-                blue_bits = getActualNum(secret_px_list[16:])
-                ##
-                #if i == 0 and j > 120 and j < 131:
-                #if count < 225:
-                 #   print(str(blue_bits) + ", " )
-                  #  count += 1
-                    ##
-                # we make a tuple that is ready to be added to the px_array
-                pixel_tuple = (red_bits, green_bits, blue_bits)
-                ##
-                #if i == 0 and j > 120 and j < 131:
-                    #print("Pixel tuple is : " +str(pixel_tuple))
-                    ##
-                secret_px_list = []
-                # if we have enough tuple pixels to make a line in the image
-                if len(secret_px_array) == secret_height:
-                    ##
-                    #if stop:
-                        #print(secret_px_array)
-                        #stop = False
-                        ##
-                    # we add it to the image
-                    secret_px_image.append(secret_px_array)
-                    secret_px_array = []
-                # else we add the tuple to the line array until we have enough    
-                else:
-                    secret_px_array.append(pixel_tuple)
-            # if we do not have enough bits to make a pixel.. keep adding the bits    
-            else:    
-                secret_px_list.insert(0, bit_we_want)
-                if which_pix <= 74 and bit_we_want != 1:
-                    print("HOUSTENNNNNN WE GOT A PROBLEM@@@@@@@@@@@@@@@@@@@@@@@\ti: " +str(i)+" j: " +str(j) )
-                
-            j += 1
-        j = 0
-        i += 1
-        
-    ##
-    #print(len(secret_px_image[0]))
-    #print(secret_px_image[0])
-    ##
-        
-    array = np.array(secret_px_image, dtype = np.uint8)
-    decoded_image = Image.fromarray(array)
-    decoded_image.save(copyLocation)
-    spike.display_image()
-
-
-
 def getActualNum(bitlist):
     out = 0
     for bit in bitlist:
         out = (out << 1) | bit
     return out
-
-
-
-# SANITY TEST
-def test_if_different(encoded_pixs, width, height):
-    # for getting our cover image to test stuffs for now... we will fix later
-    dst_dir = sys.path[0]
-    original = dst_dir + '\\' + 'cover.jpg'
-    orig_image = Image.open(original)
-    
-    original_pixs = orig_image.load()
-    
-    counter = 0
-    
-    for i in range(0, width):
-        for j in range(0, height):
-            encoded_sum = sum(encoded_pixs[i,j])
-            original_sum = sum(original_pixs[i,j])
-            #result = encoded_sum - original_sum
-            if encoded_sum != original_sum:
-                counter += 1
-            result = encoded_sum - original_sum
-    print("total number of different pixels is >> " + str(counter))
     
     
 
@@ -951,17 +543,6 @@ def find_coordinates(height, width, height_size, width_size):
     
     return width, height, go
     
-    
-
-# transforms a pixel to a binary string
-def pixel_to_binary_list_check(pixel, i, j):
-    # the '{}' means store the result as a string with 0 in 0:xxx as the starting
-    # position. and x:08 meaning pad with 0's to the left out to the 8th digit
-    # the x:xxxb means store it as a binary and format(x) formats the number
-    # appropriately after we sum up the tuple
-
-    if i == 1 and j < 792 :
-        print("SUMMMMMMMMMMMMMMMMMMMMBITCHHHHHHHHHHHHHHHHHHHHHHHHH: "+ str(pixel))
 
 
 def char_to_binary(char):
