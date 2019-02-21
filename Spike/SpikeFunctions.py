@@ -256,7 +256,7 @@ def decode_lsb_text(copyLocation, last_j, last_i,  max_lsb_used):
     else:
         append_write = 'w' # make a new file if not
     
-    secrets = open("decoded_message", append_write)
+    secrets = open("decoded_message.txt", append_write)
     #TODO: handle this someway that we want
     secrets.write(binary_to_string(complete_text))
     secrets.close()
