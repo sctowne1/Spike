@@ -82,36 +82,17 @@ def compare_image(copyLocation, copy_array, copy_count):
 
 
 
-
-def lsb_alg(spike, copyLocation):
-    secret_message = "ohhh hello! Silly, I'm a sneaking slippery little snake secret"
-    #lsb_alg_text(spike, copyLocation, secret_message)
-    lsb_alg_img(spike, copyLocation)
-
-
-
-
-
 #TEXT LSB
 # encodes an image with text data using lsb algorithm
-def lsb_alg_text(spike, copyLocation, message):
-    #TODO: for getting our cover image to test stuffs for now. do what you want
-    dst_dir = sys.path[0]
-    cover = dst_dir + '\\' + 'cover.jpg'
-    
-    
+def lsb_alg_text(copyLocation, file_location):
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
-    cover_image = Image.open(cover)
-    cover_image.save(copyLocation)
-    spike.display_image()
-
+    cover_image = Image.open(copyLocation)
     # pixels there are
     cover_width, cover_height = cover_image.size
     
     # loads our pixels from our cover image
     cover_pixs = cover_image.load()
-            
     encode_a_0 = 254
     encode_a_1 = 1
     
@@ -119,8 +100,23 @@ def lsb_alg_text(spike, copyLocation, message):
     cover_j = 0
     max_lsb_used = 0
     
-    #TODO: figure out how to handle text files and such
-    message_list = list(message)
+    text = open(file_location, "r")
+    message_list = list(text.read())
+    text.close()
+    
+    
+    # we use these numbers to determine if we can encode the text file into the
+    # image
+    max_size = (cover_width * cover_height)/8
+    total_bits = len(message_list) * 8
+    
+    
+    #if we cannot encode the text file
+    if total_bits > max_size:
+        print("Sorry, the cover image is not big enough to encode the text file.")
+        return 0
+    
+    
     for character in message_list:
         binary_list = char_to_binary(character)
         #we encode every bit in that pixel
@@ -163,20 +159,20 @@ def lsb_alg_text(spike, copyLocation, message):
         
     cover_image.save(copyLocation)
     
-    spike.display_image()
     
+    print("successfully encoded")    
     #TODO: THE FOLLOWING information is NEEDED to decode:
-    #cover_image, cover_j, cover_i, secret_width, and max_lsb_used
+    # cover_image, cover_j, cover_i, secret_width, and max_lsb_used
     #TODO: How do we handle the user decoding it since we need this information
     # maybe we give them a pw key that is comma seperated that corresponds to these
     # parameters?
-    decode_lsb_text(cover_image, cover_j, cover_i, spike, copyLocation, max_lsb_used)
 
 
 
 # decodes lsb algorithm for secret text
-def decode_lsb_text(encoded_image, last_j, last_i, spike, copyLocation, max_lsb_used):
+def decode_lsb_text(copyLocation, last_j, last_i,  max_lsb_used):
     #gets all the pixels from the encoded image
+    encoded_image = Image.open(copyLocation)
     encoded_px = encoded_image.load()
     cover_width, cover_height = encoded_image.size
 
@@ -253,30 +249,26 @@ def decode_lsb_text(encoded_image, last_j, last_i, spike, copyLocation, max_lsb_
         encode_j = 0
         encode_i += 1
     
+    
+    
+    if os.path.exists("decoded_message.txt"):
+        append_write = 'a' # append if already exists
+    else:
+        append_write = 'w' # make a new file if not
+    
+    secrets = open("decoded_message", append_write)
     #TODO: handle this someway that we want
-    print(binary_to_string(complete_text))
-
-
-
-
-# we have to & with 127 to clear out the greatest 1 bit so when we 
-# left shift, it does not mess us up
-#encode_a_0 = encode_a_0 & 127 # from 11111110 becomes 011111110
-#encode_a_0 = encode_a_0 << 1 # then 11111100
-#encode_a_0 = encode_a_0 | encode_a_1 # finally 11111101
-
-# for encoding a 1, it is quite simple: 00000001 becomes 00000010
-#encode_a_1 = encode_a_1 << 1
-
+    secrets.write(binary_to_string(complete_text))
+    secrets.close()
+    
+    
+    print("successfully decoded")
 
 
     
     
 # IMAGE LSB
 def lsb_alg_img(copyLocation, cover):
-    #TODO: for getting our cover image to test stuffs for now. do what you want
-    #dst_dir = sys.path[0]
-    #cover = dst_dir + '\\' + 'cover.jpg'
 
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
