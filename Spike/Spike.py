@@ -351,130 +351,18 @@ class Ui_MainWindow(QWidget):
         #print(copyLocation)
         
         #Parse cover location
-        cover = str(self.select_file())
-        array = cover.split("\'")
-        file = array[1]
-        cover
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         = file
-        
-        pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation, cover])
+        #TODO: option for .txt files because as it is, we only have .jpeg
+        # . png and .gif files
+        #cover = str(self.select_file())
+        #array = cover.split("\'")
+        #file = array[1]
+        #cover = file
+        
+        #pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation, cover])
+        pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation])
         pid.wait()
         
         self.display_image()
-        
-        
-    
 
 ## Main Function
 

@@ -80,11 +80,35 @@ def compare_image(copyLocation, copy_array, copy_count):
         #runs SecondaryWindow.py executable
         pid = subprocess.Popen([sys.executable, "SecondaryWindow.py", copy_array[copy_count%5-2], copyLocation])
 
+def select_cover_file():
+    """
+    Brings up file system for user to select image for their cover.
+    """
+    fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
+                                        "Image files (*.jpg)")
+    return fname
+
+def select_text_file():
+    """
+    Brings up file system for user to select image to text to encode.
+    """
+    fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
+                                        "Image files (*.txt)")
+    return fname
+
 
 
 #TEXT LSB
 # encodes an image with text data using lsb algorithm
-def lsb_alg_text(copyLocation, file_location):
+def lsb_alg_text(copyLocation):
+    
+    
+    file_location = str(select_text_file())
+    array = file_location.split("\'")
+    file = array[1]
+    file_location = file
+    
+    
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
     cover_image = Image.open(copyLocation)
@@ -268,8 +292,16 @@ def decode_lsb_text(copyLocation, last_j, last_i,  max_lsb_used):
     
     
 # IMAGE LSB
-def lsb_alg_img(copyLocation, cover):
+def lsb_alg_img(copyLocation):
 
+    
+    # gets our cover image
+    cover = str(select_cover_file())
+    array = cover.split("\'")
+    file = array[1]
+    cover = file
+    
+    
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
     cover_image = Image.open(cover)

@@ -92,9 +92,10 @@ class Ui_Dialog(object):
     
     def lsb_img(self):
         print("lsb image encode")
-        cover = str(sys.argv[2])
+        #cover = str(sys.argv[2])
         copyLocation = str(sys.argv[1])
-        SpikeFunctions.lsb_alg_img(copyLocation, cover)
+        #SpikeFunctions.lsb_alg_img(copyLocation, cover)
+        SpikeFunctions.lsb_alg_img(copyLocation)
         sys.exit(0)
     
         
@@ -107,9 +108,8 @@ class Ui_Dialog(object):
         
     def lsb_txt(self):
         print("encode text selected")
-        text_file = str(sys.argv[2])
         copyLocation = str(sys.argv[1])
-        SpikeFunctions.lsb_alg_text(copyLocation, file_location)
+        SpikeFunctions.lsb_alg_text(copyLocation)
         sys.exit(0)
 
     def lsb_txt_decode(self):
