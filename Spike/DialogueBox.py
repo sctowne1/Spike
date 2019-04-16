@@ -101,9 +101,10 @@ class Ui_Dialog(object):
         
     def lsb_img_decode(self):
         print("lsb image decode")        
-        encoded_img = str(sys.argv[2])
+        #encoded_img = str(sys.argv[2])
         copyLocation = str(sys.argv[1])
-        SpikeFunctions.decode_lsb_img(copyLocation, encoded_img)
+        #SpikeFunctions.decode_lsb_img(copyLocation, encoded_img)
+        SpikeFunctions.decode_lsb_img(copyLocation)
         sys.exit(0)
         
     def lsb_txt(self):
@@ -114,6 +115,9 @@ class Ui_Dialog(object):
 
     def lsb_txt_decode(self):
         print("decode text selected")
+        copyLocation = str(sys.argv[1])
+        SpikeFunctions.decode_lsb_text(copyLocation)
+        sys.exit(0)
         
     def return_selection(self):
         self.close()

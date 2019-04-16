@@ -9,6 +9,7 @@
 from SpikeImports import *
 import SpikeFunctions
 import FeatureExtraction
+import Orb
 
 
 
@@ -24,10 +25,13 @@ class Ui_MainWindow(QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(972, 764)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("./Images/spike.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #self.setWindowIcon(QtGui.QIcon('./land_before.png'))
+        icon = QtGui.QIcon('./land_before.png')
+        icon.addPixmap(QtGui.QPixmap("./land_before.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(True)
+        
+        
         
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -55,14 +59,6 @@ class Ui_MainWindow(QWidget):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        
-        
-        #Crop Button
-        self.CropButton = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy.setHeightForWidth(self.CropButton.sizePolicy().hasHeightForWidth())
-        self.CropButton.setSizePolicy(sizePolicy)
-        self.CropButton.setObjectName("CropButton")
-        self.verticalButtonPanel.addWidget(self.CropButton)
         
         #Mirror Button
         self.MirrorButton = QtWidgets.QPushButton(self.centralwidget)
@@ -104,6 +100,8 @@ class Ui_MainWindow(QWidget):
         self.FeatureDetectionButton.setSizePolicy(sizePolicy)
         self.FeatureDetectionButton.setObjectName("FeatureDetectionButton")
         self.verticalButtonPanel.addWidget(self.FeatureDetectionButton)
+        self.FeatureDetectionButton.clicked.connect(self.orb)
+
         
         #Steganographic Functions Button
         self.StegFuncButtons = QtWidgets.QPushButton(self.centralwidget)
@@ -179,7 +177,6 @@ class Ui_MainWindow(QWidget):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.CropButton.setText(_translate("MainWindow", "Crop"))
         self.MirrorButton.setText(_translate("MainWindow", "Mirror Image"))
         self.RotateButton.setText(_translate("MainWindow", "Rotate Image"))
         self.InvertButton.setText(_translate("MainWindow", "Invert Image"))
@@ -225,12 +222,19 @@ class Ui_MainWindow(QWidget):
         #Splits filename to give us the absolute path to the image
         array = filename.split("\'")
         filename = array[1]
+        #filename = filename.replace("/", "\\")
         global absFilename
         absFilename = filename
     
         #Copies image to the same directory as the script
         dst_dir = sys.path[0]
+        new_name = filename.split("/")
+        name = new_name[-1].split(".")
+        name[-1] = ".png"
+        name = name[0] + name[1]
         shutil.copy(filename, dst_dir)
+
+        Image.open(filename).save(name)
         
         
         #Splits the absolute path to give us the name of the image file
@@ -241,19 +245,23 @@ class Ui_MainWindow(QWidget):
         
         #Parse for file extension for saving temp copies
         array = filename.split(".")
-        file_ext = array[-1]
-
+        
+        array[-1] = ".png"
         #Creating temporary save filenames and storing them in an array
         image = Image.open(copyLocation)
         global copy_array
-        copy_array = ['.\\image0.' + file_ext, '.\\image1.' + file_ext, 
-                      '.\\image2.' + file_ext, '.\\image3.' + file_ext,
-                      '.\\image4.' + file_ext]
+        copy_array = ['.\\image0.png', '.\\image1.png', 
+                      '.\\image2.png', '.\\image3.png',
+                      '.\\image4.png']
         global copy_count
         global undo_count
         undo_count = -1 #repressents the number of times you can use the undo operation
         copy_count = 0
         self.display_image()
+        
+   # def setup_img_display():
+        
+    
         
     def save_copy(self):
         """
@@ -280,7 +288,7 @@ class Ui_MainWindow(QWidget):
         if(undo_count > 0 and copy_count >= 0):
             image_location = copy_array[copy_count%5 - 2]
             copy_count = copy_count - 1
-            image = Image.open(image_location)
+            image = Image.open(image_location).save
             image.save(copyLocation)
             copy_count = copy_count - 1 #copy_count decremented twice to account
                                         #for increment in save_copy
@@ -363,6 +371,9 @@ class Ui_MainWindow(QWidget):
         pid.wait()
         
         self.display_image()
+        
+    def orb(self):
+        Orb.call_orb()
 
 ## Main Function
 
@@ -380,9 +391,9 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     
     #Program Tray Icon
-    trayIcon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./Images/spike.jpg"), app) 
-    trayIcon.show()
-    
+    trayIcon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./land_before.png"), app) 
+    #trayIcon.show()
+        
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)

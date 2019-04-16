@@ -112,7 +112,7 @@ def run():
     query_img: filepath of img to match
     dataset:   location of directory containing images to compare to
     """
-    images_path = 'C:\\Users\\sctow\\Desktop\\Capstone\\Spike-master\\Spike\\Images'
+    images_path = 'C:\\Users\\Scott\\Desktop\\Spike--master\\Spike\\Images'
     files = [os.path.join(images_path, p) for p in sorted(os.listdir(images_path))]
     # getting 3 random images 
     #sample = random.sample(files, 3)
@@ -121,28 +121,30 @@ def run():
 
     ma = Matcher('features.pck')
     
+    file = open("feature.txt", "w+")
+    
     for s in files:
-        print('Query image ==========================================')
+        file.write('\nQuery image ==========================================\n')
         #show_img(s)
         names, match = ma.match(s, topn=3)
-        print('Result images ========================================')
+        file.write('\nResult images ========================================\n')
         best_match = 0
         match_img = ''
         for i in range(3):
             # we got cosine distance, less cosine distance between vectors
             # more they similar, thus we subtract it from 1 to get match value
-            print('Match %s' % (1-match[i]))
+            file.write('\nMatch %s' % (1-match[i]))
             if((1-match[i]) > best_match and (1-match[i]) < .98):
                 best_match = (1-match[i])
                 match_img = i
             
             #show_img(os.path.join(images_path, names[i]))
         display(s,os.path.join(images_path, names[match_img]))
-        print("s: ")
-        print(parseFilename(s))
+        file.write("\ns: ")
+        file.write(parseFilename(s))
         
-        print('\nmatch_img: ')
-        print(parseFilename(os.path.join(images_path, names[match_img])))
+        file.write('\nmatch_img: ')
+        file.write(parseFilename(os.path.join(images_path, names[match_img])))
 
 # Uncomment to run file independently for testing
 #run()

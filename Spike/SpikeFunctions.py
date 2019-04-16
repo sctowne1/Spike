@@ -85,7 +85,7 @@ def select_cover_file():
     Brings up file system for user to select image for their cover.
     """
     fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
-                                        "Image files (*.jpg)")
+                                        "Image files (*.png)")
     return fname
 
 def select_text_file():
@@ -93,7 +93,7 @@ def select_text_file():
     Brings up file system for user to select image to text to encode.
     """
     fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
-                                        "Image files (*.txt)")
+                                        "Text files (*.txt)")
     return fname
 
 
@@ -101,8 +101,6 @@ def select_text_file():
 #TEXT LSB
 # encodes an image with text data using lsb algorithm
 def lsb_alg_text(copyLocation):
-    
-    
     file_location = str(select_text_file())
     array = file_location.split("\'")
     file = array[1]
@@ -183,23 +181,26 @@ def lsb_alg_text(copyLocation):
         
     cover_image.save(copyLocation)
     
+    write_text_key(cover_j, cover_i, max_lsb_used)
     
     print("successfully encoded")    
-    #TODO: THE FOLLOWING information is NEEDED to decode:
-    # cover_image, cover_j, cover_i, secret_width, and max_lsb_used
-    #TODO: How do we handle the user decoding it since we need this information
-    # maybe we give them a pw key that is comma seperated that corresponds to these
-    # parameters?
 
 
 
 # decodes lsb algorithm for secret text
-def decode_lsb_text(copyLocation, last_j, last_i,  max_lsb_used):
+def decode_lsb_text(copyLocation):
+    # gets all parameters that we need to decode
+    key_file = select_text_file()
+    key_array = read_key(key_file)
+    last_j = int(key_array[0])
+    last_i = int(key_array[1])
+    max_lsb_used = int(key_array[2])
+    
     #gets all the pixels from the encoded image
     encoded_image = Image.open(copyLocation)
     encoded_px = encoded_image.load()
     cover_width, cover_height = encoded_image.size
-
+    
     encode_i = 0
     encode_j = 0
     extract_a_bit = 1
@@ -281,7 +282,6 @@ def decode_lsb_text(copyLocation, last_j, last_i,  max_lsb_used):
         append_write = 'w' # make a new file if not
     
     secrets = open("decoded_message.txt", append_write)
-    #TODO: handle this someway that we want
     secrets.write(binary_to_string(complete_text))
     secrets.close()
     
@@ -304,6 +304,7 @@ def lsb_alg_img(copyLocation):
     
     # we open our cover image
     # and get the dimensions of the cover image for use in determining how many
+    # cover = to_png(cover)
     cover_image = Image.open(cover)
     # pixels there are
     cover_width, cover_height = cover_image.size
@@ -322,6 +323,9 @@ def lsb_alg_img(copyLocation):
     # pixels there are
     secret_width, secret_height = secret_image.size
     secret_total_size = secret_width * secret_height
+    
+    print("max size: "+ str(max_size) )
+    print("secret_total_size: " + str(secret_total_size))
     
     #TODO: this is the check to ensure you can encode the image into the cover
     #TODO: handle this however you want
@@ -391,30 +395,22 @@ def lsb_alg_img(copyLocation):
         
     cover_image.save(copyLocation)
     
-    #spike.display_image()
-    print(cover_j)
-    print(cover_i)
-    print(secret_width)
-    print(max_lsb_used)
+    # writes the info we need to decode the image to a text file
+    write_key(cover_j, cover_i, secret_width, max_lsb_used)
+
+
+
+def decode_lsb_img(copyLocation):
+    # we get all parameters that we need to decode the encoded image
+    key_file = select_text_file()
+    key_array = read_key(key_file)
+    last_j = int(key_array[0])
+    last_i = int(key_array[1])
+    secret_width = int(key_array[2])
+    max_lsb_used = int(key_array[3])
     
-    #TODO: THE FOLLOWING information is NEEDED to decode:
-    #cover_image, cover_j, cover_i, secret_width, and max_lsb_used
-    #TODO: How do we handle the user decoding it since we need this information
-    # maybe we give them a pw key that is comma seperated that corresponds to these
-    # parameters?
-    #decode_lsb_img(cover_image, cover_j, cover_i, secret_width, copyLocation, max_lsb_used)
     
-
-
-
-def decode_lsb_img(encoded_image, last_j, last_i, secret_width, copyLocation, max_lsb_used):
-#def decode_lsb_img(copyLocation, encoded_image):
-    #last_j = 4500
-    #last_i = 1142
-    #secret_width = 500
-    #max_lsb_used = 0
-    #encoded_image = Image.open(encoded_image)
-    #gets all the pixels from the encoded image
+    encoded_image = Image.open(copyLocation)
     cover_width, cover_height = encoded_image.size
     encoded_px = encoded_image.load()
     encode_i = 0
@@ -533,9 +529,29 @@ def binary_to_string(binary_list):
     return binary_string
 
 
+def write_text_key(cover_j, cover_i, max_lsb_used):
+    key_text = str(cover_j) + ", " + str(cover_i) + ", " + str(max_lsb_used)
+    key = open("key.txt", "w")
+    key.write(key_text)
+    
+    key.close()
+    pid = subprocess.Popen([sys.executable, "KeyWindow.py"])
 
 
+def write_key(cover_j, cover_i, secret_width, max_lsb_used):
+    key_text = str(cover_j) + ", " + str(cover_i) + ", " + str(secret_width) + ", "  + str(max_lsb_used)
+    key = open("key.txt", "w")
+    key.write(key_text)
+    
+    key.close()
+    pid = subprocess.Popen([sys.executable, "KeyWindow.py"])
 
+def read_key(key):
+    key = open(str(key[0]), "r")
+    key_string = key.read()
+    key_array = key_string.split(", ")
+    key.close()
+    return key_array
 
 
 def getActualNum(bitlist):
