@@ -6,11 +6,18 @@
 #              that runs the program.
 
 ##
-from SpikeImports import *
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QLabel, QGraphicsScene
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt
+from PIL import Image
 import SpikeFunctions
-import FeatureExtraction
-import Orb
-
+import FileFunctions
+import shutil
+import sys
+import os
+import orb
+import subprocess
 
 
 class Ui_MainWindow(QWidget):
@@ -25,13 +32,10 @@ class Ui_MainWindow(QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(972, 764)
-        #self.setWindowIcon(QtGui.QIcon('./land_before.png'))
-        icon = QtGui.QIcon('./land_before.png')
-        icon.addPixmap(QtGui.QPixmap("./land_before.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("./Images/spike.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(True)
-        
-        
         
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -100,7 +104,7 @@ class Ui_MainWindow(QWidget):
         self.FeatureDetectionButton.setSizePolicy(sizePolicy)
         self.FeatureDetectionButton.setObjectName("FeatureDetectionButton")
         self.verticalButtonPanel.addWidget(self.FeatureDetectionButton)
-        self.FeatureDetectionButton.clicked.connect(self.orb)
+        self.FeatureDetectionButton.clicked.connect(orb.call_orb)
 
         
         #Steganographic Functions Button
@@ -128,7 +132,6 @@ class Ui_MainWindow(QWidget):
         self.UndoButtons.setObjectName("UndoButtons")
         self.verticalButtonPanel.addWidget(self.UndoButtons)
         self.UndoButtons.clicked.connect(self.undo)
-
         
         
         self.horizontalLayout.addLayout(self.verticalButtonPanel)
@@ -150,7 +153,7 @@ class Ui_MainWindow(QWidget):
         self.LoadButton = QtWidgets.QPushButton(self.centralwidget)
         self.LoadButton.setObjectName("LoadButton")
         self.horizontalButtonPanel.addWidget(self.LoadButton)
-        self.LoadButton.clicked.connect(self.get_locations)
+        self.LoadButton.clicked.connect(self.load_image)
 
         
         #Save Button
@@ -181,8 +184,6 @@ class Ui_MainWindow(QWidget):
         self.RotateButton.setText(_translate("MainWindow", "Rotate Image"))
         self.InvertButton.setText(_translate("MainWindow", "Invert Image"))
         self.GrayscaleButton.setText(_translate("MainWindow", "Grayscale"))
-        #self.TintingButton.setText(_translate("MainWindow", "Tinting"))
-        #self.ContrastExposureButton.setText(_translate("MainWindow", "Contrast and Exposure"))
         self.FeatureDetectionButton.setText(_translate("MainWindow", "Feature Detection"))
         self.StegFuncButtons.setText(_translate("MainWindow", "Steganography Functions"))
         self.CompareButton.setText(_translate("MainWindow", "Compare"))
@@ -190,163 +191,64 @@ class Ui_MainWindow(QWidget):
         self.UndoButtons.setText(_translate("MainWindow", "Undo"))
         self.LoadButton.setText(_translate("MainWindow", "Load Image"))
         self.SaveButton.setText(_translate("MainWindow", "Save"))
-        
 
+## Load and Save Button Functions
 
-## FUNCTIONS
-    
-    def select_file(self):
-        """
-        Brings up file system for user to select image to edit.
-        """
-        
-        #Can edit images that are .png, but the display quality in program is 
-        #noticably worse, however when you open the edited image outside of 
-        #program, no quality has been lost
-        fname = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\',
-                                            "Image files (*.jpg *.png *.gif)")
-        return fname
-    
-    def get_locations(self):
-        """
-        Ater receiving the filename, parses the string to obtain the absolute path,
-        copies the image to the local Spike directory, and populates global 
-        variables accordingly.
-        """
-        
-        global filename
-        
-        #Calls select_file which returns the filename of the selected image
-        filename = str(self.select_file())
-        
-        #Splits filename to give us the absolute path to the image
-        array = filename.split("\'")
-        filename = array[1]
-        #filename = filename.replace("/", "\\")
+    def load_image(self):
         global absFilename
-        absFilename = filename
-    
-        #Copies image to the same directory as the script
-        dst_dir = sys.path[0]
-        new_name = filename.split("/")
-        name = new_name[-1].split(".")
-        name[-1] = ".png"
-        name = name[0] + name[1]
-        shutil.copy(filename, dst_dir)
-
-        Image.open(filename).save(name)
-        
-        
-        #Splits the absolute path to give us the name of the image file
-        array = filename.split("/")
-        filename = array[-1]
+        global filename
         global copyLocation
-        copyLocation = dst_dir + '\\' + filename
-        
-        #Parse for file extension for saving temp copies
-        array = filename.split(".")
-        
-        array[-1] = ".png"
-        #Creating temporary save filenames and storing them in an array
-        image = Image.open(copyLocation)
-        global copy_array
-        copy_array = ['.\\image0.png', '.\\image1.png', 
-                      '.\\image2.png', '.\\image3.png',
-                      '.\\image4.png']
         global copy_count
+        global copy_array
         global undo_count
-        undo_count = -1 #repressents the number of times you can use the undo operation
+        
+        undo_count = -1
         copy_count = 0
+        
+        absFilename = FileFunctions.get_absFile()
+        filename = FileFunctions.get_filename(absFilename)
+        
+        # copies image to Spike's Images directory
+        FileFunctions.copy_image(absFilename)
+        copyLocation = FileFunctions.get_copyLocation(filename)
+        
+        #print("absFilename: " + absFilename + "\n")
+        #print("copyLocation: " + copyLocation + "\n")
+        #print("filename: " + filename + "\n")
+        
+        copy_array = FileFunctions.populate_copies()
+        
         self.display_image()
-        
-   # def setup_img_display():
-        
     
-        
-    def save_copy(self):
-        """
-        Saves the image into the correct position in the copy_array.
-        """
-        global copy_count
-        global undo_count
-        global copy_array
-        if(undo_count < 4): #the number in this statement should be one less than the length of copy_array
-            undo_count = undo_count + 1
-        image = Image.open(copyLocation)
-        #undo_location is the location of the image in the copy_array that will be displayed when the undo function is called.
-        undo_location = copy_array[copy_count % 5] #change the number after the mod operator for more positions in copy_array. This number should match the length of the variable copy_array
-        image.save(undo_location)
-        copy_count = copy_count + 1
-
-    def undo(self):
-        """
-        Implements functionality of the undo button by displaying the image from
-        the previous edit and saving it to the copyLocation.
-        """
-        global copy_count
-        global undo_count
-        if(undo_count > 0 and copy_count >= 0):
-            image_location = copy_array[copy_count%5 - 2]
-            copy_count = copy_count - 1
-            image = Image.open(image_location).save
-            image.save(copyLocation)
-            copy_count = copy_count - 1 #copy_count decremented twice to account
-                                        #for increment in save_copy
-            undo_count = undo_count - 2 #undo_count decremented by 2 to account\
-                                        #for increment in save_copy
-            self.display_image()
-    
-    def display_image(self):
-        """
-        Displays the image that is in the global variable copyLocation on the graphicsView
-        """
-        self.save_copy()
-
-        
-        #Creates a label, a graphics scene and a pixmap with the image. The image is then
-        #scaled while maintaining the aspect ratio and displayed within the graphicsView.
-        label = QLabel(self)
-        self.scene = QGraphicsScene()
-        myPixmap = QtGui.QPixmap(filename)
-        myScaledPixmap = myPixmap.scaled(self.graphicsView.size(), 
-                                         Qt.KeepAspectRatio)
-        label.setPixmap(myScaledPixmap)
-        self.scene.addPixmap(myScaledPixmap)
-        self.graphicsView.setScene(self.scene)
-
     def save_image(self):
-        """
-        Saves the image to the selected location in the computer's file system.
-        """
-        #TODO: Allow user to change file name so as to not overwrite any other files
-        file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        file = file + '/' + filename
-        print(file)
-        image_obj = Image.open(copyLocation)
-        image_obj.save(file)
+        FileFunctions.save_image(filename, copyLocation)
         
-
+    
 ## Editing Functions
     
     def mirror_image(self):
         global copyLocation
-        SpikeFunctions.mirror_image(self, copyLocation)
+        SpikeFunctions.mirror_image(copyLocation)
+        self.display_image()
+
     
     def rotate_image(self):
         global copyLocation
-        SpikeFunctions.rotate_image(self, copyLocation)
+        SpikeFunctions.rotate_image(copyLocation)
+        self.display_image()
+
 
     def grayscale_image(self):
         global copyLocation
-        SpikeFunctions.grayscale_image(self, copyLocation)
+        SpikeFunctions.grayscale_image(copyLocation)
+        self.display_image()
 
-    def tint_image(self):
-        global copyLocation
-        SpikeFunctions.tint_image(self, copyLocation)
     
     def invert_image(self):
         global copyLocation
-        SpikeFunctions.invert_image(self, copyLocation)
+        SpikeFunctions.invert_image(copyLocation)
+        self.display_image()
+
     
     def compare_image(self):
         global copyLocation
@@ -354,46 +256,59 @@ class Ui_MainWindow(QWidget):
         global copy_array
         SpikeFunctions.compare_image(copyLocation, copy_array, copy_count)
     
+    def undo(self):
+        global copy_array
+        global copy_count
+        global undo_count
+        global copyLocation
+        copy_count, undo_count = SpikeFunctions.undo(copy_array, copy_count, undo_count, copyLocation)
+        self.display_image()
+    
     def steg_options(self):
         global copyLocation
-        #print(copyLocation)
         
-        #Parse cover location
-        #TODO: option for .txt files because as it is, we only have .jpeg
-        # . png and .gif files
-        #cover = str(self.select_file())
-        #array = cover.split("\'")
-        #file = array[1]
-        #cover = file
-        
-        #pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation, cover])
         pid = subprocess.Popen([sys.executable, "DialogueBox.py", copyLocation])
         pid.wait()
         
         self.display_image()
+ 
+ 
+ ## Image Display Functions
+    
+    def display_image(self):
+        """
+        Displays the image that is in the global variable copyLocation on the graphicsView
+        """
+        global undo_count
+        global copy_count
+               
+        undo_count, copy_count = FileFunctions.save_copy(copy_array, copy_count, undo_count, copyLocation)
         
-    def orb(self):
-        Orb.call_orb()
+        #Creates a label, a graphics scene and a pixmap with the image. The image is then
+        #scaled while maintaining the aspect ratio and displayed within the graphicsView.
+        label = QLabel(self)
+        self.scene = QGraphicsScene()
+        myPixmap = QtGui.QPixmap(copyLocation)
+        myScaledPixmap = myPixmap.scaled(self.graphicsView.size(), 
+                                         Qt.KeepAspectRatio)
+        label.setPixmap(myScaledPixmap)
+        self.scene.addPixmap(myScaledPixmap)
+        self.graphicsView.setScene(self.scene)
+    
+    
 
+        
 ## Main Function
 
 
 if __name__ == "__main__":
-    
-    #return_code = subprocess.call("setup.py", shell=True)
-    #TODO: This is not ther right way to do this
-    #subprocess.call("setup.py", shell=True) 
-
-    #TODO: Check return code to ensure packages installed properly and pull up prompt if they do not
-    #print(return_code)
-    
-
+        
     app = QtWidgets.QApplication(sys.argv)
     
     #Program Tray Icon
-    trayIcon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./land_before.png"), app) 
-    #trayIcon.show()
-        
+    trayIcon = QtWidgets.QSystemTrayIcon(QtGui.QIcon("./Images/spike.jpg"), app) 
+    trayIcon.show()
+    
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
@@ -401,5 +316,3 @@ if __name__ == "__main__":
     MainWindow.show() 
     
     sys.exit(app.exec_())
-
-
