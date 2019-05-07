@@ -1,10 +1,8 @@
 ##
-
 # Authors: Scott Towne and Jeriah Caplinger
-
+# Version: May 2019
 # Description: This file contains the functions used to manipulate images in the
 #              Spike program
-
 ##
 from PIL import Image
 import PIL.ImageOps
@@ -15,6 +13,7 @@ import sys
 def mirror_image(copyLocation):
     """
     Mirror the image and calls display_image so that the edited version is displayed
+    @param: copyLocation - the location to which the edited image is saved
     """
     image_obj = Image.open(copyLocation)
     rotated_image = image_obj.transpose(Image.FLIP_LEFT_RIGHT)
@@ -24,6 +23,7 @@ def mirror_image(copyLocation):
 def rotate_image(copyLocation):
     """
     Rotate the given photo 90 degrees and calls display_image
+    @param: copyLocation - the location to which the edited image is saved
     """
     image = Image.open(copyLocation)
     image = image.transpose(Image.ROTATE_90)
@@ -33,6 +33,7 @@ def rotate_image(copyLocation):
 def grayscale_image(copyLocation):
     """
     Convert image to grayscale using PIL
+    @param: copyLocation - the location to which the edited image is saved
     """
     img_obj = Image.open(copyLocation)
     img_obj = img_obj.convert("L") 
@@ -42,6 +43,7 @@ def grayscale_image(copyLocation):
 def invert_image(copyLocation):
     """
     Inverts colors of image using PIL
+    @param: copyLocation - the location to which the edited image is saved
     """
     image = Image.open(copyLocation)
     inverted_image = PIL.ImageOps.invert(image)
@@ -51,6 +53,9 @@ def invert_image(copyLocation):
 def compare_image(copyLocation, copy_array, copy_count):
     """
     Creates a SecondaryWindow with the most recent and directly previous image using the SecondaryWindow.py file.
+    @param: copyLocation - the location to which the edited image is saved
+            copy_array - array of past edits to the image
+            copy_count - where in the array the current edit is located
     """
     if(copy_count > 1):
         #runs SecondaryWindow.py executable
@@ -62,6 +67,10 @@ def undo(copy_array, copy_count, undo_count, copyLocation):
     """
     Implements functionality of the undo button by displaying the image from
     the previous edit and saving it to the copyLocation.
+    @param: copyLocation - the location to which the edited image is saved
+            copy_array - array of past edits to the image
+            copy_count - where in the array the current edit is located
+            undo_count - how many times the undo function has been performed
     """
     if(undo_count > 0 and copy_count >= 0):
         image_location = copy_array[copy_count%5 - 2]
