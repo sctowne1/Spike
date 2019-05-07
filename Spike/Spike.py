@@ -1,10 +1,8 @@
 ##
-
 # Authors: Scott Towne and Jeriah Caplinger
-
+# Version: May 2019
 # Description: This file contains the GUI components of the Spike program and the main function
 #              that runs the program.
-
 ##
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog, QLabel, QGraphicsScene
@@ -19,7 +17,11 @@ import os
 import orb
 import subprocess
 
+"""
+Creates the main window that the user interacts with.
 
+@param: Qwidget - a QWidtget object
+"""
 class Ui_MainWindow(QWidget):
     absFilename = ''
     copyLocation = ''
@@ -28,7 +30,12 @@ class Ui_MainWindow(QWidget):
     copy_array = ''
     undo_count = ''
     
+    """
+    Method that sets up the main window object and intializes the layout.
     
+    @param: self - the Spike object
+            MainWindow - the MainWindow object
+    """
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(972, 764)
@@ -176,7 +183,11 @@ class Ui_MainWindow(QWidget):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+    """
+    Populates the buttons in the window.
+    @param: self - the Spike object
+            MainWindow - the MainWindow object
+    """
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -192,8 +203,11 @@ class Ui_MainWindow(QWidget):
         self.LoadButton.setText(_translate("MainWindow", "Load Image"))
         self.SaveButton.setText(_translate("MainWindow", "Save"))
 
-## Load and Save Button Functions
 
+    """
+    Implements the functionality of the Load Image button.
+    @param: self - the Spike object
+    """
     def load_image(self):
         global absFilename
         global filename
@@ -219,43 +233,72 @@ class Ui_MainWindow(QWidget):
         copy_array = FileFunctions.populate_copies()
         
         self.display_image()
-    
+        
+    """
+    Implements the functionality of the Save Image button.
+    @param: self - the Spike object
+    """
     def save_image(self):
         FileFunctions.save_image(filename, copyLocation)
         
     
 ## Editing Functions
-    
+    """
+    Functionality of the Mirror button. Calls the mirror_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def mirror_image(self):
         global copyLocation
         SpikeFunctions.mirror_image(copyLocation)
         self.display_image()
 
-    
+    """
+    Functionality of the Rotate button. Calls the rotate_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def rotate_image(self):
         global copyLocation
         SpikeFunctions.rotate_image(copyLocation)
         self.display_image()
 
-
+    """
+    Functionality of the Grayscale button. Calls the grayscale_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def grayscale_image(self):
         global copyLocation
         SpikeFunctions.grayscale_image(copyLocation)
         self.display_image()
 
-    
+    """
+    Functionality of the Invert button. Calls the invert_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def invert_image(self):
         global copyLocation
         SpikeFunctions.invert_image(copyLocation)
         self.display_image()
 
-    
+    """
+    Functionality of the Compare button. Calls the compare_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def compare_image(self):
         global copyLocation
         global copy_count
         global copy_array
         SpikeFunctions.compare_image(copyLocation, copy_array, copy_count)
-    
+        
+    """
+    Functionality of the Undo button. Calls the undo_image function in the SpikeFunctions 
+    file.
+    @param: self - the Spike object
+    """
     def undo(self):
         global copy_array
         global copy_count
@@ -264,6 +307,10 @@ class Ui_MainWindow(QWidget):
         copy_count, undo_count = SpikeFunctions.undo(copy_array, copy_count, undo_count, copyLocation)
         self.display_image()
     
+    """
+    Functionality of the Steganography button.
+    @param: self - the Spike object
+    """
     def steg_options(self):
         global copyLocation
         
@@ -274,7 +321,10 @@ class Ui_MainWindow(QWidget):
  
  
  ## Image Display Functions
-    
+    """
+    Displays the current edit to the window.
+    @param: self - the Spike object
+    """
     def display_image(self):
         """
         Displays the image that is in the global variable copyLocation on the graphicsView
@@ -300,7 +350,9 @@ class Ui_MainWindow(QWidget):
         
 ## Main Function
 
-
+"""
+The main function that creates and displays the Spike object.
+"""
 if __name__ == "__main__":
         
     app = QtWidgets.QApplication(sys.argv)
