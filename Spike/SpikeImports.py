@@ -35,4 +35,4 @@ from skimage.color import rgb2gray
 from skimage import data
 
 #Numpy
-import numpy as np
+import numpy as np 
