@@ -21,7 +21,8 @@ This is an image editing program that implements image editing functions from th
  It also utilizes **pyqt5** for creation of the GUI.
 
  The following functions have been implemented:
-   Load Image, Save Image, Mirror Image, Invert Image, Rotate Image, Grayscale Image, Compare and Undo.
+   Load Image, Save Image, Mirror Image, Invert Image, Rotate Image, Grayscale Image, Compare, Undo, 
+   LSB Steganography for image and text encryption, Feature Detection using ORB and Difference of sums techniques.
    
  ### Known Issues:
 No currently known issues
