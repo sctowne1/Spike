@@ -5,12 +5,11 @@ import shutil
 from PIL import Image
 
 
+"""
+Brings up file system for user to select image to edit.
+@return: Returns the absolute filepath of the selected image.
+"""
 def get_absFile():
-    """
-    Brings up file system for user to select image to edit.
-    Returns the absolute filepath.
-    """
-    
     fname = str(QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
                                         "Image files (*.jpg *.png *.gif)"))
     #Splits filename to give us the absolute path to the image
@@ -18,6 +17,11 @@ def get_absFile():
     fname = array[1]
     return fname
     
+"""
+Gets the filename from the absolute path
+@param: filename the absolute filename path
+@return: returns the filename
+"""
 def get_filename(filename):
     absFilename = filename
     dst_dir = sys.path[0]
@@ -28,8 +32,12 @@ def get_filename(filename):
     return name
     
 
-# this function is responsible for opening the selected image and
-# transforming it to a .png    
+"""
+This function is responsible for opening the selected image and
+transforming it to a .png
+@param: filename the absolute filename path
+@return: the new filename if it had to be converted to a .png
+"""
 def copy_image(filename):
     dst_dir = sys.path[0]
     dst_dir_2 = dst_dir + "\\Images\\"
@@ -53,12 +61,12 @@ def copy_image(filename):
         opened.save(new_filename)
     
     return new_filename
-    
-    
-    #TODO: return filename so select_encoded_file can use this function to convert
-    # an image to a .png
 
-    
+ """
+ Gets the copyLocation that spike will reference
+ @param: filename the absolute filename path
+ @return: the copyLocation path
+ """
 def get_copyLocation(filename):
     dst_dir = sys.path[0]
     dst_dir = dst_dir + "\\Images"
@@ -66,13 +74,22 @@ def get_copyLocation(filename):
     filename = array[-1]
     copyLocation = dst_dir + '\\' + filename
     return copyLocation
-    
+
+"""
+Populates the copy array with images that the undo functionality will use
+@return: the copy array that undo will access
+"""
 def populate_copies():
     copy_array = ['.\\Images\\image0.png', '.\\Images\\image1.png', 
                     '.\\Images\\image2.png', '.\\Images\\image3.png',
                     '.\\Images\\image4.png']
     return copy_array
 
+"""
+Saves the users selected image to the copyLocation that Spike will reference
+@param: filename the absolute filename
+@param: copyLocation the location that Spike will reference
+"""
 def save_image(filename, copyLocation):
     """
     Saves the image to the selected location in the computer's file system.
@@ -82,6 +99,15 @@ def save_image(filename, copyLocation):
     image_obj = Image.open(copyLocation)
     image_obj.save(file)    
 
+    
+"""
+Saves a copy of the image after an image processing function has been performed of the image
+so the user can undo if they wish
+@param: copy_array the array that holds copies of the images
+@param: copy_count how many image copies we have in the copy_array
+@param: undo_count how many times we can undo in the list
+@param: copyLocation the path to the image that spike references
+"""
 def save_copy(copy_array, copy_count, undo_count, copyLocation):
     """
     Saves the image into the correct position in the copy_array.
@@ -100,20 +126,23 @@ def save_copy(copy_array, copy_count, undo_count, copyLocation):
     copy_count = copy_count + 1
     return undo_count, copy_count
 
-
+"""
+Brings up file system for user to select image for their cover.
+@return: the absolute filename of the image the user selected
+"""
 def select_encoded_file():
-    """
-    Brings up file system for user to select image for their cover.
-    """
     fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
                                         "Image files (*.png *jpg)")
     
     return fname
 
+
+"""
+Brings up file system for user to select image to text to encode.
+@return: the absolute filename of the text file the user selected
+"""
 def select_text_file():
-    """
-    Brings up file system for user to select image to text to encode.
-    """
+    
     fname = QFileDialog.getOpenFileName(None, 'Open file', 'c:\\',
                                         "Text files (*.txt)")
     return fname
