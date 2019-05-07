@@ -4,6 +4,7 @@
 
 # Description: This file contains the functions used to implement steganography
 
+# Version: May 2019
 ##
 
 from FileFunctions import select_encoded_file, select_text_file
@@ -14,8 +15,11 @@ import numpy as np
 import os
 
 
-#TEXT LSB
-# encodes an image with text data using lsb algorithm
+"""
+This function encodes an image with text data using the lsb algorithm.
+@param: copyLocation the path to the image in the Spike folder currently being displayed
+@return: returns 0 if it could not encode, returns nothing otherwise
+"""
 def lsb_alg_text(copyLocation):
     file_location = str(select_text_file())
     array = file_location.split("\'")
@@ -24,18 +28,23 @@ def lsb_alg_text(copyLocation):
     
     
     # we open our cover image
-    # and get the dimensions of the cover image for use in determining how many
+    # and get the dimensions of the cover image for use in determining if we can encode our
+    # data into th eimage
     cover_image = Image.open(copyLocation)
     # pixels there are
     cover_width, cover_height = cover_image.size
     
     # loads our pixels from our cover image
     cover_pixs = cover_image.load()
+    
+    # for use in bit level manipulations
     encode_a_0 = 254
     encode_a_1 = 1
     
+    # indexes of the cover image for encoding
     cover_i= 0
     cover_j = 0
+    # which lsb we are on
     max_lsb_used = 0
     
     text = open(file_location, "r")
@@ -47,12 +56,8 @@ def lsb_alg_text(copyLocation):
     # image
     max_size = (cover_width * cover_height)
     total_bits = len(message_list)
-
-
-    print("max_size >> " + str(max_size))
-    print("total_bits >> " + str(total_bits))
     
-    #if we cannot encode the text file
+    #if we cannot encode the text file 
     if total_bits > max_size:
         print("Sorry, the cover image is not big enough to encode the text file.")
         return 0
@@ -106,7 +111,10 @@ def lsb_alg_text(copyLocation):
 
 
 
-# decodes lsb algorithm for secret text
+"""
+Function that decodes an image that has text encoded inside of it using the LSB algorithm
+@param: copyLocation the path to the image in the Spike folder currently being displayed
+"""
 def decode_lsb_text(copyLocation):
     # gets all parameters that we need to decode
     key_file = select_text_file()
@@ -203,17 +211,17 @@ def decode_lsb_text(copyLocation):
     secrets = open("decoded_message.txt", append_write)
     secrets.write(binary_to_string(complete_text))
     secrets.close()
-    
-    
-    print("successfully decoded")
 
 
     
     
 # IMAGE LSB
+"""
+Function that encodes an image inside another image using the LSB algorithm
+@param: copyLocation the path to the image in the Spike folder currently being displayed
+@return: returns 0 if it could not encode, returns nothing otherwise
+"""
 def lsb_alg_img(copyLocation):
-
-    
     # gets our image we want to encode
     secret = copyLocation
     
@@ -315,6 +323,10 @@ def lsb_alg_img(copyLocation):
 
 
 
+"""
+Function that decodes an image that has an image encoded inside it using the LSB algorithm
+@param: copyLocation the path to the image in the Spike folder currently being displayed
+"""
 def decode_lsb_img(copyLocation):
     # we get all parameters that we need to decode the encoded image
     key_file = select_text_file()
@@ -437,6 +449,11 @@ def decode_lsb_img(copyLocation):
 
 
 
+"""
+Converts a binary list into a string
+@param: binary_list a list of binary numbers
+@return: the binary_list in string form
+"""
 def binary_to_string(binary_list):
     binary_string = ""
     for item in binary_list:
@@ -444,15 +461,29 @@ def binary_to_string(binary_list):
     return binary_string
 
 
+"""
+Function that writes the key to decode an image's secret text data.
+@param: cover_j the last j pixel used in the cover image
+@param: cover_i the last i pixel used in the cover image
+@param: max_lsb_used the highest lsb used in the cover image
+"""
 def write_text_key(cover_j, cover_i, max_lsb_used):
     key_text = str(cover_j) + ", " + str(cover_i) + ", " + str(max_lsb_used)
     key = open("key.txt", "w")
     key.write(key_text)
     
     key.close()
+    #tells the user where the key was written to
     pid = subprocess.Popen([sys.executable, "KeyWindow.py"])
 
 
+"""
+Function that writes the key to decode an image's secret image data
+@param: cover_j the last j pixel used in the cover image
+@param: cover_i the last i pixel used in the cover image
+@param: secret_width the width of the encoded image
+@param: max_lsb_used the highest lsb used in the cover image
+"""
 def write_key(cover_j, cover_i, secret_width, max_lsb_used):
     key_text = str(cover_j) + ", " + str(cover_i) + ", " + str(secret_width) + ", "  + str(max_lsb_used)
     key = open("key.txt", "w")
@@ -461,6 +492,12 @@ def write_key(cover_j, cover_i, secret_width, max_lsb_used):
     key.close()
     pid = subprocess.Popen([sys.executable, "KeyWindow.py"])
 
+
+"""
+Function that reads in the key and returns it as an array
+@param: key the path to the file that we need to read in as the key
+@return: the key in array form
+"""
 def read_key(key):
     key = open(str(key[0]), "r")
     key_string = key.read()
@@ -469,6 +506,11 @@ def read_key(key):
     return key_array
 
 
+"""
+Returns the complete binary number of a bitlist
+@param: bitlist the binary number in list form
+@return: the binary number in decimal form
+"""
 def getActualNum(bitlist):
     out = 0
     for bit in bitlist:
@@ -480,7 +522,16 @@ def getActualNum(bitlist):
 
 
     
-# finds the pixel coordinates of the next secret_image pixel to use
+"""
+Function finds the pixel coordinates of the next secret_image pixel to use
+@param: height the height we are currently at in the image
+@param: width the width we are currently at in the image
+@param: height_size the max height size of the image
+@param: width_size the max width size of the image
+@return: width the width we need to be on for the next pixel
+@return: height the height we need to be on for the next pixel
+@return: go if we can keep going in the cover image
+"""
 def find_coordinates(height, width, height_size, width_size):
     go = True
     # means we are on the last pixel
@@ -499,24 +550,22 @@ def find_coordinates(height, width, height_size, width_size):
     return width, height, go
     
 
-
+"""
+Converts a character to binary form
+@param: char the character to convert to binary
+@return: the character in binary form stored in a list
+"""
 def char_to_binary(char):
     decim = ord(char)
     binary_char = '{0:08b}'.format(decim)
     return list(binary_char)
-
-# transforms a pixel to a binary string
-def pixel_to_binary_list_print(pixel):
-    # the '{}' means store the result as a string with 0 in 0:xxx as the starting
-    # position. and x:08 meaning pad with 0's to the left out to the 8th digit
-    # the x:xxxb means store it as a binary and format(x) formats the number
-    # appropriately after we sum up the tuple
-    red_px = '{0:08b}'.format(pixel[0])
-    green_px = '{0:08b}'.format(pixel[1])
-    blue_px = '{0:08b}'.format(pixel[2])
-    print("["+red_px + green_px + blue_px + "]")
     
 # transforms a pixel to a binary string
+"""
+Function that transforms a pixel to a binary string
+@param: pixel the pixel to transform to a binary string
+@return: a binary string in a list representing the pixel
+"""
 def pixel_to_binary_list(pixel):
     # the '{}' means store the result as a string with 0 in 0:xxx as the starting
     # position. and x:08 meaning pad with 0's to the left out to the 8th digit
@@ -525,8 +574,6 @@ def pixel_to_binary_list(pixel):
     red_px = '{0:08b}'.format(pixel[0])
     green_px = '{0:08b}'.format(pixel[1])
     blue_px = '{0:08b}'.format(pixel[2])
-    
-    
-    
+   
     return list(red_px + green_px + blue_px)
     
