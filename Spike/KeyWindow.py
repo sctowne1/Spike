@@ -1,13 +1,18 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'KeyWindow.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.3
-#
-# WARNING! All changes made in this file will be lost!
+##
+# Authors: Scott Towne and Jeriah Caplinger
+# Version: May 2019
+# Class that creates a KeyWindow object and displays the window with a message
+# to the user stating that the decryption key was written to the key.txt file
+# in the Spike directory.
+##
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+"""
+Class that creates a KeyWindow object that displays the message stating where the
+decryption key was saved.
 
+@param: object - the Spike object
+"""
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -34,13 +39,21 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+    """
+    Method that creates the label and populates it with the message.
+    
+    @param: self - the KeyWindow object
+            MainWindow - the MainWindow object
+    """
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "\tYour decryption key was written to key.txt.\n\tIf you do not rename the file, it will be overwritten."))
 
-
+"""
+The main function that is run to create the KeyWindow object and display it
+to the user.
+"""
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
