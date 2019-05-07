@@ -1,3 +1,8 @@
+##
+# Authors: Scott Towne and Jeriah Caplinger
+# Version: May 2019
+# Description: Imports modules that are used throughout the packages.
+##
 
 #GUI imports
 from PyQt5 import QtCore, QtGui, QtWidgets
