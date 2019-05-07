@@ -15,6 +15,9 @@ import datetime
 
 
 def call_orb():
+"""
+Implements the ORB toolkit from scikit-image.
+"""
     image1 = str(FileFunctions.select_encoded_file())
     array = image1.split("\'")
     file = array[1]
@@ -58,6 +61,11 @@ def call_orb():
     plt.show()
     
 def compare(image1, image2):
+"""
+Does a difference of sums calculation to get the percent difference between two selected images
+@param: image1 - the first image to compare
+        image2 - the second image to compare
+"""
     i1 = Image.open(image1)
     i2 = Image.open(image2)
     assert i1.mode == i2.mode, "Different kinds of images."
@@ -75,7 +83,13 @@ def compare(image1, image2):
     return perc_diff
 
 def write_file(perc_diff, img1, img2):
-    
+"""
+Writes the timestamp, location of the two images, and the percent difference between them
+to a log file called feature.txt in the Spike directory.\
+@param: perc_diff - the percent difference between the two images
+        img1 - path to the first image being compared
+        img2 - the path to the second image being compared
+"""
     file = open("feature.txt", "a+")
     currentDT = datetime.datetime.now()
     file.write("Timestamp: ")
