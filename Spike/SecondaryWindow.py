@@ -1,13 +1,15 @@
 ##
-
 # Authors: Scott Towne and Jeriah Caplinger
-
+# Version: May 2019
 # Description: This is and executable file that displays a window with two images 
 #              whose locations are defined in the command line arguments.
-
 ##
 from SpikeImports import *
+"""
+This class creates the window that appears when the compare button is selected.
 
+@param: QWidget - a QWidget object
+"""
 class Ui_MainWindow(QWidget):
         
     def setupUi(self, MainWindow):
@@ -64,7 +66,12 @@ class Ui_MainWindow(QWidget):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         
-        ##Displays the current and immediately previous image
+    """
+    Displays the two images being compared.
+    @param: self - the SecondaryWindow object
+            image1 - the first image being displayed
+            image2 - the second image being displayed
+    """
     def display_image(self, image1, image2):
         label = QLabel(self)
         self.scene = QGraphicsScene()
@@ -82,7 +89,9 @@ class Ui_MainWindow(QWidget):
         self.scene.addPixmap(myScaledPixmap2)
         self.graphicsView2.setScene(self.scene)
         
-#def make(image1, image2):
+"""
+The main function that creates and displays the SecondaryWindow
+"""
 if __name__ == "__main__":
 
     import sys
