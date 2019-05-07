@@ -1,10 +1,8 @@
 ##
-
 # Authors: Scott Towne and Jeriah Caplinger
-
+# Version: May 2019
 # Description: This is and executable file that displays a window with two images 
 #              whose locations are defined in the command line arguments.
-
 ##
 import SpikeFunctions
 import Steganography
@@ -17,8 +15,20 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+"""
+This class creates the radio button window that appears when the steganography button
+is selected. It provides users with the options of LSB Imgae Encode, LSB Image Decode,
+LSB Text encode, and LSB Text Decode.
+
+@param: object - our Spike object
+"""
 class Ui_Dialog(object):
+    """
+    This method performs the setup for the SecondaryWindow object.
     
+    @param: self - the SecondaryWindow object
+            Dialog - 
+    """
     def setupUi(self, Dialog):
         print(sys.argv[0])
         Dialog.setObjectName("Dialog")
@@ -79,7 +89,12 @@ class Ui_Dialog(object):
         #self.radioButton.toggled.connect(self.radio_3)
         #self.radioButton_3.toggled.connect(self.radio_3)
 
-
+    """
+    This method sets the values for the radio buttons.
+    
+    @param: self - the SecondaryWindow object
+            Dialog - 
+    """
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
@@ -90,7 +105,11 @@ class Ui_Dialog(object):
         self.radioButton_4.setText(_translate("Dialog", "LSB Text Decode"))
 
    
+    """
+    This method calls the LSB Image Encode function when that option is selected
     
+    @param: self - the SecondaryWindow object
+    """
     def lsb_img(self):
         print("lsb image encode")
         #cover = str(sys.argv[2])
@@ -99,7 +118,11 @@ class Ui_Dialog(object):
         Steganography.lsb_alg_img(copyLocation)
         sys.exit(0)
     
-        
+        """
+    This method calls the LSB Image Decode function when that option is selected
+    
+    @param: self - the SecondaryWindow object
+    """    
     def lsb_img_decode(self):
         print("lsb image decode")        
         #encoded_img = str(sys.argv[2])
@@ -107,13 +130,23 @@ class Ui_Dialog(object):
         #SpikeFunctions.decode_lsb_img(copyLocation, encoded_img)
         Steganography.decode_lsb_img(copyLocation)
         sys.exit(0)
-        
+    
+    """
+    This method calls the LSB Text Encode function when that option is selected
+    
+    @param: self - the SecondaryWindow object
+    """
     def lsb_txt(self):
         print("encode text selected")
         copyLocation = str(sys.argv[1])
         Steganography.lsb_alg_text(copyLocation)
         sys.exit(0)
 
+    """
+    This method calls the LSB Text Decode function when that option is selected
+    
+    @param: self - the SecondaryWindow object
+    """
     def lsb_txt_decode(self):
         print("decode text selected")
         copyLocation = str(sys.argv[1])
@@ -124,7 +157,9 @@ class Ui_Dialog(object):
         self.close()
 
 
-
+"""
+The main function that creates the SecondaryWindow and displays it to the screen.
+"""
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
