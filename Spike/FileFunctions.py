@@ -39,7 +39,6 @@ def copy_image(filename):
     filename = filename.split("/")
     new_filename = filename[-1]
     new_filename = new_filename.split(".")
-    print(new_filename[-1])
     if new_filename[-1] != "png":
         new_filename = new_filename[0]
         new_filename = dst_dir_2 + new_filename + ".png"
@@ -80,7 +79,6 @@ def save_image(filename, copyLocation):
     """
     file = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
     file = file + '/' + filename
-    print(file)
     image_obj = Image.open(copyLocation)
     image_obj.save(file)    
 

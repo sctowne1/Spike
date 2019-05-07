@@ -45,9 +45,12 @@ def lsb_alg_text(copyLocation):
     
     # we use these numbers to determine if we can encode the text file into the
     # image
-    max_size = (cover_width * cover_height)/8
-    total_bits = len(message_list) * 8
-    
+    max_size = (cover_width * cover_height)
+    total_bits = len(message_list)
+
+
+    print("max_size >> " + str(max_size))
+    print("total_bits >> " + str(total_bits))
     
     #if we cannot encode the text file
     if total_bits > max_size:
@@ -220,7 +223,7 @@ def lsb_alg_img(copyLocation):
     # pixels there are
     secret_width, secret_height = secret_image.size
     
-    secret_size = (secret_width * secret_height)
+    secret_size = (secret_width * secret_height)*3
     
     # WE WANT TO ITERATE THROUGH THE ENTIRE LENGTH WISE OF THE PICTURE THEN MOVE
     # TO THE SECOND LINE... so when we do the double loop, we want to do HEIGHT then WIDTH!
@@ -237,7 +240,7 @@ def lsb_alg_img(copyLocation):
     # we get the dimensions of the secret image for use in determining how many
     # pixels there are
     cover_width, cover_height = cover_image.size
-    max_size = (cover_width * cover_height)/8
+    max_size = cover_width * cover_height
     
     #TODO: this is the check to ensure you can encode the image into the cover
     #TODO: handle this however you want

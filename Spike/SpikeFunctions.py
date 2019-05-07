@@ -8,6 +8,8 @@
 ##
 from PIL import Image
 import PIL.ImageOps
+import subprocess
+import sys
 
 
 def mirror_image(copyLocation):
