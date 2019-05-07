@@ -1,8 +1,9 @@
 ##
 # Authors: Scott Towne and Jeriah Caplinger
 # Version: May 2019
-# Description: This is and executable file that displays a window with two images 
-#              whose locations are defined in the command line arguments.
+# Description: This is and executable file that displays a window with radio
+# buttons to allow the user to select the encode and decode method they want
+# to use.
 ##
 import SpikeFunctions
 import Steganography
