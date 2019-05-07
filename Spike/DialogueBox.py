@@ -25,9 +25,9 @@ LSB Text encode, and LSB Text Decode.
 """
 class Ui_Dialog(object):
     """
-    This method performs the setup for the SecondaryWindow object.
+    This method performs the setup for the DialogueBox object.
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
             Dialog - 
     """
     def setupUi(self, Dialog):
@@ -93,7 +93,7 @@ class Ui_Dialog(object):
     """
     This method sets the values for the radio buttons.
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
             Dialog - 
     """
     def retranslateUi(self, Dialog):
@@ -109,7 +109,7 @@ class Ui_Dialog(object):
     """
     This method calls the LSB Image Encode function when that option is selected
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
     """
     def lsb_img(self):
         print("lsb image encode")
@@ -122,7 +122,7 @@ class Ui_Dialog(object):
         """
     This method calls the LSB Image Decode function when that option is selected
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
     """    
     def lsb_img_decode(self):
         print("lsb image decode")        
@@ -135,7 +135,7 @@ class Ui_Dialog(object):
     """
     This method calls the LSB Text Encode function when that option is selected
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
     """
     def lsb_txt(self):
         print("encode text selected")
@@ -146,7 +146,7 @@ class Ui_Dialog(object):
     """
     This method calls the LSB Text Decode function when that option is selected
     
-    @param: self - the SecondaryWindow object
+    @param: self - the DialogueBox object
     """
     def lsb_txt_decode(self):
         print("decode text selected")
@@ -159,7 +159,7 @@ class Ui_Dialog(object):
 
 
 """
-The main function that creates the SecondaryWindow and displays it to the screen.
+The main function that creates the DialogueBox and displays it to the screen.
 """
 if __name__ == "__main__":
     import sys
